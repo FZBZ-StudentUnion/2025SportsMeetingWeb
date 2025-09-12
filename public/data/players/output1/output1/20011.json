@@ -1,0 +1,67 @@
+{
+  "name": "高三男子组 800米 预决赛",
+  "players": [
+    [
+      {
+        "road": "1",
+        "name": "钟宇辉",
+        "data": "-",
+        "class": ""
+      },
+      {
+        "road": "2",
+        "name": "刘旭睿",
+        "data": "-",
+        "class": ""
+      },
+      {
+        "road": "3",
+        "name": "林羿鸣",
+        "data": "-",
+        "class": ""
+      },
+      {
+        "road": "4",
+        "name": "高圣东",
+        "data": "-",
+        "class": ""
+      },
+      {
+        "road": "5",
+        "name": "徐代鑫",
+        "data": "-",
+        "class": ""
+      },
+      {
+        "road": "6",
+        "name": "谢宇轩",
+        "data": "-",
+        "class": ""
+      },
+      {
+        "road": "7",
+        "name": "卓方正",
+        "data": "-",
+        "class": ""
+      },
+      {
+        "road": "8",
+        "name": "田昊锦",
+        "data": "-",
+        "class": ""
+      },
+      {
+        "road": "9",
+        "name": "高子翔",
+        "data": "-",
+        "class": ""
+      },
+      {
+        "road": "10",
+        "name": "余森",
+        "data": "-",
+        "class": ""
+      }
+    ]
+  ]
+}

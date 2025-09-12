@@ -1,0 +1,729 @@
+/* 全局样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* 头部样式 */
+.app-header {
+  background: linear-gradient(135deg, #883561 0%, #6b2a4d 100%);
+  padding: 12px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: slideInDown 0.6s ease-out;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.header-titles {
+  color: white;
+  animation: fadeInLeft 0.8s ease-out;
+}
+
+.title-main {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+  transition: all 0.3s ease;
+}
+
+.title-main:hover {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.title-sub {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  animation: fadeInLeft 0.8s ease-out 0.2s both;
+}
+
+/* 主内容区域 */
+.main-content {
+  flex: 1;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* 信息区域 */
+.info-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  gap: 20px;
+}
+
+.time-display {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.time-label {
+  display: block;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 5px;
+}
+
+.time-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  font-family: 'Courier New', monospace;
+}
+
+.download-link {
+  text-decoration: none;
+}
+
+.download-button {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.download-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.download-label {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 3px;
+}
+
+.download-target {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* 日期切换 */
+.date-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.day-toggle {
+  background: #883561;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.day-toggle:hover {
+  background: #6b2a4d;
+}
+
+.date-display {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.day-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.day-button {
+  background: #f0f0f0;
+  color: #666;
+  border: 2px solid #ddd;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-button:hover:not(:disabled) {
+  background: #e0e0e0;
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.day-button.active {
+  background: #883561;
+  color: white;
+  border-color: #883561;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.day-button:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.day-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.day-button:hover::before {
+  width: 100px;
+  height: 100px;
+}
+
+.day-button:disabled {
+  background: #883561;
+  color: white;
+  border-color: #883561;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.day-label {
+  font-family: inherit;
+}
+
+/* 比赛区域 */
+.game-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-family: '楷体', serif;
+}
+
+.game-table-container {
+  margin-bottom: 20px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.period-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #555;
+  font-family: '黑体', sans-serif;
+  animation: fadeInLeft 0.5s ease-out;
+}
+
+.game-table {
+  width: 100%;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: scaleIn 0.4s ease-out;
+}
+
+.game-table th,
+.game-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  transition: all 0.3s ease;
+}
+
+.game-table th {
+  background: #f8f9fa;
+  font-weight: bold;
+  color: #555;
+}
+
+.game-table tr {
+  transition: all 0.3s ease;
+}
+
+.game-table tr:hover {
+  background: #f8f9fa;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.game-link {
+  color: #667eea;
+  text-decoration: none;
+  padding: 5px 10px;
+  border: 1px solid #667eea;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-link:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.game-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #667eea;
+  transition: width 0.3s ease;
+}
+
+.game-link:hover::after {
+  width: 100%;
+}
+
+/* 游戏详情页面 */
+.game-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.back-button-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #883561;
+  color: white;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(136, 53, 97, 0.3);
+}
+
+.back-button-top:hover {
+  background: #6b2a4c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(136, 53, 97, 0.4);
+}
+
+.back-arrow {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.back-button-top:hover .back-arrow {
+  transform: translateX(-3px);
+}
+
+.game-title {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.grade-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.event-name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #667eea;
+  transition: all 0.3s ease;
+}
+
+.game-title:hover .grade-name {
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+.game-title:hover .event-name {
+  color: #764ba2;
+  transform: translateY(-1px);
+}
+
+.home-button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.home-button:hover {
+  background: #764ba2;
+}
+
+.game-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.player-group {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.player-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.player-table th,
+.player-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.player-table th {
+  background: #f8f9fa;
+  font-weight: bold;
+  color: #555;
+}
+
+.player-table tr {
+  transition: all 0.3s ease;
+}
+
+.player-table tr:hover {
+  background: #f8f9fa;
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.player-table-container {
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.player-table-container:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* 底部样式 */
+.app-footer {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: auto;
+}
+
+.copyright {
+  opacity: 0.8;
+}
+
+/* 搜索功能样式 */
+.search-section {
+  margin: 20px 0;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.search-bar,
+.athlete-search {
+  flex: 1;
+  min-width: 250px;
+}
+
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #883561;
+  box-shadow: 0 0 0 2px rgba(136, 53, 97, 0.2);
+}
+
+.search-clear {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.3s ease;
+}
+
+.search-clear:hover {
+  color: #883561;
+}
+
+.search-results {
+  margin-top: 10px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.athlete-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.athlete-item {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.3s ease;
+}
+
+.athlete-item:hover {
+  background-color: #f8f9fa;
+}
+
+.athlete-item:last-child {
+  border-bottom: none;
+}
+
+.athlete-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.athlete-name {
+  font-weight: bold;
+  color: #333;
+}
+
+.athlete-class {
+  color: #883561;
+  font-size: 14px;
+}
+
+.athlete-events {
+  font-size: 13px;
+  color: #666;
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .title-main {
+    font-size: 2rem;
+  }
+  
+  .info-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-section {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .game-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .game-title {
+    text-align: center;
+  }
+  
+  .back-button-top {
+    align-self: center;
+    margin-bottom: 10px;
+  }
+  
+  .game-table th,
+  .game-table td,
+  .player-table th,
+  .player-table td {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .player-table tr:hover {
+    transform: none;
+  }
+
+  .search-section {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .search-bar,
+  .athlete-search {
+    min-width: 100%;
+  }
+  
+  .search-input {
+    font-size: 16px;
+  }
+  
+  .athlete-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  /* 运动员搜索样式 */
+  .athlete-item {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .athlete-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+  }
+
+  .game-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .go-to-game {
+    color: #883561;
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+}
+
+/* 自定义字体 */
+.zi {
+  font-family: 'YouSheBiaoTiHei-2', 'Microsoft YaHei', sans-serif;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
