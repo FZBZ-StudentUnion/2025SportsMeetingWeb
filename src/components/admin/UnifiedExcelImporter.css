@@ -1,0 +1,255 @@
+.unified-importer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.importer-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.importer-header h2 {
+  color: #333;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.importer-header p {
+  color: #666;
+  font-size: 18px;
+}
+
+.type-selector {
+  margin-bottom: 40px;
+}
+
+.type-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.type-card {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.type-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.type-card.active {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.type-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.type-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 20px;
+}
+
+.type-card p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.import-workflow {
+  margin-bottom: 40px;
+}
+
+.workflow-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.step {
+  text-align: center;
+  padding: 20px;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.step h4 {
+  margin: 10px 0 5px 0;
+  color: #333;
+}
+
+.step p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.template-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.template-section h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.template-section p {
+  margin: 0 0 20px 0;
+  color: #666;
+}
+
+.template-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.download-template-btn,
+.download-example-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.download-template-btn {
+  background: #667eea;
+  color: white;
+}
+
+.download-example-btn {
+  background: #f8f9fa;
+  color: #333;
+  border: 1px solid #dee2e6;
+}
+
+.download-template-btn:hover,
+.download-example-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.upload-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.preview-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.preview-section h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+}
+
+.import-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.import-btn,
+.reset-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.import-btn {
+  background: #28a745;
+  color: white;
+}
+
+.import-btn:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+.import-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.reset-btn {
+  background: #6c757d;
+  color: white;
+}
+
+.reset-btn:hover:not(:disabled) {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+.template-btn {
+  padding: 8px 16px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.template-btn:hover {
+  background: #e9ecef;
+}
+
+@media (max-width: 768px) {
+  .type-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .workflow-steps {
+    grid-template-columns: 1fr;
+  }
+  
+  .template-actions {
+    flex-direction: column;
+  }
+  
+  .import-actions {
+    flex-direction: column;
+  }
+}

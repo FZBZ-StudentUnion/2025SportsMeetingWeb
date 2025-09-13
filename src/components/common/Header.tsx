@@ -2,10 +2,12 @@ import React from 'react';
 import { APP_CONFIG } from '../../utils/constants';
 import { useCurrentTime } from '../../hooks/useCurrentTime';
 import { apiService } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 import logo from '../../logo.png';
 
 export const Header: React.FC = () => {
   const currentTime = useCurrentTime();
+  const { state, logout } = useAuth();
 
   const handleDownloadSchedule = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -24,10 +26,15 @@ export const Header: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/';
+  };
+
   return (
     <header className="app-header">
       <div className="header-content">
-        <div className="header-left">
+        <div className="header-left" onClick={() => window.location.href = '/'} style={{ cursor: 'pointer' }}>
           <img 
           src={logo} 
           alt="福州八中校徽" 
@@ -63,6 +70,43 @@ export const Header: React.FC = () => {
               <span className="download-target zi">秩序册</span>
             </div>
           </button>
+          
+          {state.isAuthenticated ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '10px' }}>
+              <span style={{ color: 'white' }}>欢迎, {state.user?.username}</span>
+              <button 
+                onClick={handleLogout}
+                style={{
+                  background: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                退出登录
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => window.location.href = '/admin'}
+              className="admin-button"
+              style={{
+                background: '#007bff',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                marginLeft: '10px',
+                fontSize: '14px'
+              }}
+            >
+              管理后台
+            </button>
+          )}
         </div>
       </div>
     </header>

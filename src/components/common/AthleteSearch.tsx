@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiService } from '../../services/api';
 
 interface Athlete {
   name: string;
@@ -23,33 +24,73 @@ export const AthleteSearch: React.FC<AthleteSearchProps> = ({
   const [allAthletes, setAllAthletes] = useState<Athlete[]>([]);
 
   useEffect(() => {
-    // 加载真实的运动员数据
+    // 从真实API加载运动员数据
     loadRealAthletes();
   }, []);
 
-  const loadRealAthletes = () => {
-    // 基于真实数据的运动员映射
-    const realAthletes: Athlete[] = [
-      { name: '李宥熹', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '丘天', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '林柏喆', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '毛盾', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '张哲豪', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '陈哲锐', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '林琢程', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '王墨迪', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '吴博晗', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '林焌豪', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '黄家兴', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '程志滔', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '陈睿哲', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '林俊炜', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '张艺哲', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '刘凯烨', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '孙永昊', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '卢隽祺', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-    ];
-    setAllAthletes(realAthletes);
+  const loadRealAthletes = async () => {
+    try {
+      const athleteFiles = [
+        '10001', '10002', '10003', '10004', '10005', '10006',
+        '10007', '10008', '10009', '10010', '10011', '10012',
+        '10101', '10102', '10103', '10104', '10105',
+        '11001', '11002', '11003', '11004', '11005', '11006',
+        '11007', '11008', '11009', '11010', '11011', '11012',
+        '11101', '11102', '11103', '11104', '11105', '11106',
+        '11107', '11108',
+        '20001', '20002', '20003', '20004', '20005', '20006',
+        '20007', '20008', '20009', '20010', '20011', '20012',
+        '20013', '20014', '20015', '20016', '20017', '20018',
+        '20019', '20020', '20021',
+        '20101', '20102', '20103', '20104', '20105', '20106',
+        '20107', '20108',
+        '21001', '21002', '21003', '21004', '21005', '21006',
+        '21101', '21102', '21103'
+      ];
+
+      const allAthletes: Athlete[] = [];
+
+      // 使用apiService加载数据
+      for (const id of athleteFiles) {
+        try {
+          const gameData = await apiService.getPlayerList(id);
+          
+          // 从游戏数据中提取运动员信息
+          gameData.players.forEach((group: any[], groupIndex: number) => {
+            group.forEach((player: any) => {
+              if (player.name && player.name.trim()) {
+                // 从项目名称提取年级和性别信息
+                const gameName = gameData.name;
+                let className = player.class || '未知班级';
+                
+                if (className === '' && player.name) {
+                  // 如果没有班级信息，使用项目信息推测
+                  if (gameName.includes('高一')) className = '高一(?)班';
+                  else if (gameName.includes('高二')) className = '高二(?)班';
+                  else if (gameName.includes('高三')) className = '高三(?)班';
+                  else className = '未知班级';
+                }
+
+                allAthletes.push({
+                  name: player.name,
+                  className: className,
+                  events: [gameData.name],
+                  gameLinks: [`/games?id=${id}`]
+                });
+              }
+            });
+          });
+        } catch (error) {
+          console.error(`加载运动员文件失败: ${id}`, error);
+        }
+      }
+
+      setAllAthletes(allAthletes);
+    } catch (error) {
+      console.error('加载运动员数据失败:', error);
+      // 如果加载失败，使用空数组
+      setAllAthletes([]);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
