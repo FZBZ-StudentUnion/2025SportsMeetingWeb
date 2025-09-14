@@ -28,6 +28,19 @@ export const AthleteSearch: React.FC<AthleteSearchProps> = ({
     loadRealAthletes();
   }, []);
 
+  // 监听数据更新事件并刷新运动员数据
+  useEffect(() => {
+    const handleDataUpdate = () => {
+      loadRealAthletes();
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdate);
+    };
+  }, []);
+
   const loadRealAthletes = async () => {
     try {
       const athleteFiles = [

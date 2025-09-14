@@ -9,8 +9,15 @@ const PORT = 3001;
 
 // 中间件
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static('public'));
+
+// 设置响应头编码
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
 
 // 数据目录路径
 const DATA_DIR = path.join(__dirname, 'public', 'data');
@@ -159,6 +166,117 @@ app.post('/api/backup/:type', async (req, res) => {
     res.json({ success: true, message: '备份成功' });
   } catch (error) {
     res.status(500).json({ error: '备份失败' });
+  }
+});
+
+// API路由：同步在线编辑器数据到主页面
+app.post('/api/sync/editor-data', async (req, res) => {
+  const { games, athletes } = req.body;
+  
+  try {
+    // 初始化数据结构
+    const day1TrackMorning = [];
+    const day1TrackAfternoon = [];
+    const day1FieldMorning = [];
+    const day1FieldAfternoon = [];
+    
+    const day2TrackMorning = [];
+    const day2TrackAfternoon = [];
+    const day2FieldMorning = [];
+    const day2FieldAfternoon = [];
+    
+    // 处理比赛项目数据
+    const gameData = games && games.length > 0 ? games : [
+      { name: '高一男子组 100M 预赛', grade: '高一', type: '径赛', id: '1001', participants: 20 },
+      { name: '高一女子组 100M 预赛', grade: '高一', type: '径赛', id: '1002', participants: 20 },
+      { name: '高二男子组 100M 预赛', grade: '高二', type: '径赛', id: '1003', participants: 20 },
+      { name: '高二女子组 100M 预赛', grade: '高二', type: '径赛', id: '1004', participants: 20 },
+      { name: '高三男子组 100M 预赛', grade: '高三', type: '径赛', id: '1005', participants: 20 },
+      { name: '高三女子组 100M 预赛', grade: '高三', type: '径赛', id: '1006', participants: 20 }
+    ];
+    
+    // 分配比赛项目到不同时间段
+    gameData.forEach(game => {
+      const item = {
+        name: game.name,
+        grade: game.grade,
+        time: game.time || '上午',
+        link: `/game/${game.id}`
+      };
+      
+      // 简单分配逻辑
+      if (game.name.includes('高一')) {
+        if (game.type === '径赛') {
+          day1TrackMorning.push(item);
+        } else {
+          day1FieldMorning.push(item);
+        }
+      } else if (game.name.includes('高二')) {
+        if (game.type === '径赛') {
+          day2TrackMorning.push(item);
+        } else {
+          day2FieldMorning.push(item);
+        }
+      } else {
+        if (game.type === '径赛') {
+          day2TrackAfternoon.push(item);
+        } else {
+          day2FieldAfternoon.push(item);
+        }
+      }
+    });
+    
+    // 构建数据文件
+    const day1Data = [day1TrackMorning, day1TrackAfternoon, day1FieldMorning, day1FieldAfternoon];
+    const day2Data = [day2TrackMorning, day2TrackAfternoon, day2FieldMorning, day2FieldAfternoon];
+    
+    // 保存到文件
+    await writeJsonFile(path.join(GAMES_DIR, '10.json'), day1Data);
+    await writeJsonFile(path.join(GAMES_DIR, '20.json'), day2Data);
+    
+    // 创建运动员文件
+    for (const game of gameData) {
+      const gameId = game.id;
+      const playersFile = path.join(PLAYERS_DIR, `${gameId}.json`);
+      
+      // 找到对应运动员
+      let gameAthletes = athletes ? athletes.filter(athlete => 
+        athlete.events && athlete.events.includes(game.name)
+      ) : [];
+      
+      // 如果没有运动员，创建示例数据
+      if (gameAthletes.length === 0) {
+        gameAthletes = [
+          { name: '示例运动员1', class: '高一(1)班', grade: '高一', studentId: '2024001' },
+          { name: '示例运动员2', class: '高一(2)班', grade: '高一', studentId: '2024002' }
+        ];
+      }
+      
+      const players = gameAthletes.map(athlete => ({
+        name: athlete.name,
+        class: athlete.class || `${athlete.grade}(1)班`,
+        road: '1',
+        data: athlete.studentId || ''
+      }));
+      
+      // 分组
+      const groupedPlayers = [];
+      for (let i = 0; i < players.length; i += 6) {
+        groupedPlayers.push(players.slice(i, i + 6));
+      }
+      
+      const playerData = {
+        name: game.name,
+        players: groupedPlayers.length > 0 ? groupedPlayers : [players.slice(0, 6)]
+      };
+      
+      await writeJsonFile(playersFile, playerData);
+    }
+    
+    res.json({ success: true, message: '数据同步成功' });
+  } catch (error) {
+    console.error('同步数据失败:', error);
+    res.status(500).json({ error: '同步失败' });
   }
 });
 

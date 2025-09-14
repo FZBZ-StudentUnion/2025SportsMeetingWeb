@@ -19,6 +19,21 @@ const GamePage: React.FC = () => {
     setMounted(true);
   }, [id, actions]);
 
+  // 监听数据更新事件并刷新赛事详情
+  useEffect(() => {
+    const handleDataUpdate = () => {
+      if (id) {
+        actions.loadPlayerList(id);
+      }
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdate);
+    };
+  }, [id, actions]);
+
   if (!id) {
     return (
       <div className="game-page">

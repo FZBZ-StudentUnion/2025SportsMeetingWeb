@@ -15,9 +15,7 @@ import { DATE_CONFIG } from '../../utils/constants';
 const GameListPage: React.FC = () => {
   const { getParam } = useQueryParams();
   const { state, actions } = useAppContext();
-  const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [athleteQuery, setAthleteQuery] = useState('');
   
   const day = useMemo(() => {
     const dayParam = getParam('day');
@@ -25,12 +23,22 @@ const GameListPage: React.FC = () => {
   }, [getParam]);
 
   useEffect(() => {
-    setMounted(true);
     actions.setCurrentDay(day);
     actions.loadGameSchedule(day);
   }, [day, actions]);
 
+  // 监听数据更新事件并刷新数据
+  useEffect(() => {
+    const handleDataUpdate = () => {
+      actions.loadGameSchedule(day);
+    };
 
+    window.addEventListener('dataUpdated', handleDataUpdate);
+
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdate);
+    };
+  }, [day, actions]);
 
   const selectDay = (selectedDay: string) => {
     if (selectedDay !== day) {

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import { GameSchedule, PlayerList, ClassMapping } from '../types';
 import { apiService } from '../services/api';
 
@@ -150,6 +150,22 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       dispatch({ type: 'SET_ERROR', payload: null });
     },
   }), []);
+
+  // 监听数据更新事件并刷新全局状态
+  useEffect(() => {
+    const handleDataUpdate = () => {
+      // 重新加载当前页面所需的数据
+      if (state.currentDay && state.gameSchedule) {
+        actions.loadGameSchedule(state.currentDay);
+      }
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdate);
+    };
+  }, [state.currentDay, state.gameSchedule, actions]);
 
   return (
     <AppContext.Provider value={{ state, dispatch, actions }}>

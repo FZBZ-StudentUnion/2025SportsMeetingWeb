@@ -1,0 +1,46 @@
+[
+  {
+    "id": "A001",
+    "name": "张三",
+    "studentId": "202401001",
+    "className": "高一(1)班",
+    "gender": "男",
+    "grade": "高一",
+    "contact": "13800138001",
+    "events": [
+      {
+        "eventId": "10001",
+        "eventName": "高一男子组 100米 预赛",
+        "registrationTime": "2025-09-14T06:29:56.315Z",
+        "status": "confirmed"
+      }
+    ],
+    "metadata": {
+      "createdAt": "2025-09-14T06:29:56.315Z",
+      "updatedAt": "2025-09-14T06:29:56.315Z",
+      "createdBy": "system"
+    }
+  },
+  {
+    "id": "A002",
+    "name": "李四",
+    "studentId": "202401002",
+    "className": "高一(1)班",
+    "gender": "男",
+    "grade": "高一",
+    "contact": "13800138002",
+    "events": [
+      {
+        "eventId": "10001",
+        "eventName": "高一男子组 100米 预赛",
+        "registrationTime": "2025-09-14T06:29:56.315Z",
+        "status": "confirmed"
+      }
+    ],
+    "metadata": {
+      "createdAt": "2025-09-14T06:29:56.315Z",
+      "updatedAt": "2025-09-14T06:29:56.315Z",
+      "createdBy": "system"
+    }
+  }
+]

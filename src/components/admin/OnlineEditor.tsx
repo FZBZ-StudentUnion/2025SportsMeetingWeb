@@ -24,6 +24,43 @@ const OnlineEditor: React.FC = () => {
     dispatch({ type: 'SET_MODAL_OPEN', payload: true });
   };
 
+  const handleSyncToMain = async () => {
+    if (!window.confirm('确定要将当前数据同步到主页面吗？此操作将覆盖主页面数据！')) {
+      return;
+    }
+
+    try {
+      const syncData = {
+        games: state.games,
+        athletes: state.athletes,
+        schedules: state.schedules
+      };
+
+      // 同步到后端API
+      const response = await fetch('http://localhost:3001/api/sync/editor-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(syncData)
+      });
+
+      if (response.ok) {
+        alert('数据已成功同步到主页面！用户刷新页面后即可看到更新。');
+        
+        // 触发数据更新事件，通知主页面重新加载
+        window.dispatchEvent(new CustomEvent('dataUpdated', {
+          detail: { type: 'sync', source: 'editor' }
+        }));
+      } else {
+        throw new Error('同步失败');
+      }
+    } catch (error) {
+      console.error('同步数据失败:', error);
+      alert('数据同步失败，请检查网络连接或联系管理员。');
+    }
+  };
+
   const handleEdit = (item: any) => {
     dispatch({ type: 'SET_EDITING_ITEM', payload: item });
     dispatch({ type: 'SET_MODAL_OPEN', payload: true });
@@ -173,6 +210,13 @@ const OnlineEditor: React.FC = () => {
         <button className="add-button" onClick={handleAddNew}>
           ➕ 添加新{state.activeTab === 'games' ? '项目' : 
                     state.activeTab === 'athletes' ? '运动员' : '时间安排'}
+        </button>
+        <button 
+          className="sync-button" 
+          onClick={handleSyncToMain}
+          style={{ marginLeft: '10px', background: '#28a745' }}
+        >
+          🔄 同步到主页面
         </button>
         <button 
           className="clear-button" 

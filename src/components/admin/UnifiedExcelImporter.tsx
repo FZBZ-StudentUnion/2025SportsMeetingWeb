@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useExcelImport } from '../../contexts/ExcelImportContext';
 import { ExcelUploader } from './ExcelUploader';
 import { DataPreview } from './DataPreview';
@@ -24,6 +24,20 @@ export const UnifiedExcelImporter: React.FC<UnifiedExcelImporterProps> = ({ onIm
                    activeType === 'athletes' ? state.athletesData :
                    state.scheduleData;
   const importStatus = state.importStatus;
+
+  // 监听数据更新事件并重置导入状态
+  useEffect(() => {
+    const handleDataUpdate = () => {
+      // 重置导入状态
+      resetImport();
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdate);
+    };
+  }, []);
 
   const setImportStatus = (status: 'idle' | 'loading' | 'success' | 'error') => {
     dispatch({ type: 'SET_IMPORT_STATUS', payload: status });
@@ -63,6 +77,11 @@ export const UnifiedExcelImporter: React.FC<UnifiedExcelImporterProps> = ({ onIm
       
       if (result.success) {
         setImportStatus('success');
+        // 触发自定义事件通知其他组件数据已更新
+        window.dispatchEvent(new CustomEvent('dataUpdated', { 
+          detail: { type: activeType, action: 'import' } 
+        }));
+        
         if (onImportComplete) {
           onImportComplete();
         }

@@ -16,6 +16,19 @@ const TestAthletesPage: React.FC = () => {
     loadAthletes();
   }, []);
 
+  // 监听数据更新事件并刷新运动员数据
+  useEffect(() => {
+    const handleDataUpdate = () => {
+      loadAthletes();
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdate);
+    };
+  }, []);
+
   const loadAthletes = async () => {
     try {
       const athleteFiles = [

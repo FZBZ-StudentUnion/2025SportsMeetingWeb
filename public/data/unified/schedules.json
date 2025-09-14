@@ -1,0 +1,44 @@
+[
+  {
+    "id": "S10001",
+    "eventId": "10001",
+    "eventName": "高一男子组 100米 预赛",
+    "date": "2024-10-15",
+    "startTime": "09:30",
+    "endTime": "09:50",
+    "location": "田径场",
+    "round": "预赛",
+    "status": "scheduled",
+    "conflictCheck": {
+      "hasConflict": false
+    }
+  },
+  {
+    "id": "S10002",
+    "eventId": "10002",
+    "eventName": "高一女子组 100米 预赛",
+    "date": "2024-10-15",
+    "startTime": "09:52",
+    "endTime": "10:12",
+    "location": "田径场",
+    "round": "预赛",
+    "status": "scheduled",
+    "conflictCheck": {
+      "hasConflict": false
+    }
+  },
+  {
+    "id": "S20001",
+    "eventId": "20001",
+    "eventName": "高一男子组 跳高 预决赛",
+    "date": "2024-10-15",
+    "startTime": "09:30",
+    "endTime": "11:00",
+    "location": "跳高场地",
+    "round": "预决赛",
+    "status": "scheduled",
+    "conflictCheck": {
+      "hasConflict": false
+    }
+  }
+]

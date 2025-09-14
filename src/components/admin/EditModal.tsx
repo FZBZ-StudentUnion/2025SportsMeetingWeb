@@ -111,8 +111,8 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, item, type }) =>
       updatedAt: new Date().toISOString(),
     };
 
+    // 本地状态更新
     if (item) {
-      // 更新
       switch (type) {
         case 'games':
           dispatch({ type: 'UPDATE_GAME', payload: updatedData });
@@ -125,7 +125,6 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, item, type }) =>
           break;
       }
     } else {
-      // 新建
       switch (type) {
         case 'games':
           dispatch({ type: 'ADD_GAME', payload: updatedData });
@@ -138,6 +137,11 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, item, type }) =>
           break;
       }
     }
+
+    // 触发数据更新事件，通知其他组件刷新
+    window.dispatchEvent(new CustomEvent('dataUpdated', { 
+      detail: { type, action: item ? 'update' : 'add' } 
+    }));
 
     onClose();
   };

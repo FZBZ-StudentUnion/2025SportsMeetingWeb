@@ -1,0 +1,74 @@
+[
+  {
+    "id": "10001",
+    "name": "高一男子组 100米 预赛",
+    "grade": "高一",
+    "gender": "男子",
+    "type": "径赛",
+    "category": "100米",
+    "participantsCount": 36,
+    "status": "scheduled",
+    "schedule": {
+      "date": "2024-10-15",
+      "startTime": "09:30",
+      "endTime": "09:50",
+      "location": "田径场",
+      "round": "预赛",
+      "order": 1
+    },
+    "athletes": [],
+    "metadata": {
+      "createdAt": "2025-09-14T06:29:56.314Z",
+      "updatedAt": "2025-09-14T06:29:56.315Z",
+      "createdBy": "system"
+    }
+  },
+  {
+    "id": "10002",
+    "name": "高一女子组 100米 预赛",
+    "grade": "高一",
+    "gender": "女子",
+    "type": "径赛",
+    "category": "100米",
+    "participantsCount": 30,
+    "status": "scheduled",
+    "schedule": {
+      "date": "2024-10-15",
+      "startTime": "09:52",
+      "endTime": "10:12",
+      "location": "田径场",
+      "round": "预赛",
+      "order": 2
+    },
+    "athletes": [],
+    "metadata": {
+      "createdAt": "2025-09-14T06:29:56.315Z",
+      "updatedAt": "2025-09-14T06:29:56.315Z",
+      "createdBy": "system"
+    }
+  },
+  {
+    "id": "20001",
+    "name": "高一男子组 跳高 预决赛",
+    "grade": "高一",
+    "gender": "男子",
+    "type": "田赛",
+    "category": "跳高",
+    "participantsCount": 20,
+    "status": "scheduled",
+    "schedule": {
+      "date": "2024-10-15",
+      "startTime": "09:30",
+      "endTime": "11:00",
+      "location": "跳高场地",
+      "round": "预决赛",
+      "order": 1
+    },
+    "athletes": [],
+    "metadata": {
+      "createdAt": "2025-09-14T06:29:56.315Z",
+      "updatedAt": "2025-09-14T06:29:56.315Z",
+      "createdBy": "system"
+    }
+  }
+]

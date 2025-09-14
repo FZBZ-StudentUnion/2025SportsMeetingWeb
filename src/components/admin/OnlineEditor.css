@@ -114,6 +114,27 @@
   box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 }
 
+.sync-button {
+  padding: 12px 24px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sync-button:hover {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
 .clear-button {
   background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;

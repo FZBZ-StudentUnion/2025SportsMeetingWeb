@@ -4,6 +4,7 @@ import { ProtectedRoute } from '../contexts/AuthContext';
 const GameListPage = lazy(() => import('../pages/GameListPage'));
 const GamePage = lazy(() => import('../pages/GamePage'));
 const AdminPage = lazy(() => import('../pages/AdminPage'));
+const UnifiedManagementPage = lazy(() => import('../pages/UnifiedManagementPage'));
 
 const routes = [
   {
@@ -19,6 +20,14 @@ const routes = [
     element: (
       <ProtectedRoute>
         <AdminPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/unified-management',
+    element: (
+      <ProtectedRoute>
+        <UnifiedManagementPage />
       </ProtectedRoute>
     ),
   },

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 
 // 数据类型定义
 export interface GameData {
@@ -114,6 +114,20 @@ interface ExcelImportProviderProps {
 
 export const ExcelImportProvider: React.FC<ExcelImportProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(excelImportReducer, initialState);
+
+  // 监听数据更新事件并重置导入状态
+  useEffect(() => {
+    const handleDataUpdate = () => {
+      // 重置导入状态
+      dispatch({ type: 'CLEAR_DATA' });
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdate);
+
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdate);
+    };
+  }, []);
 
   return (
     <ExcelImportContext.Provider value={{ state, dispatch }}>
