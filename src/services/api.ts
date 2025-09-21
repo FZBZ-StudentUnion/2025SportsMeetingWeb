@@ -69,6 +69,32 @@ class ApiService {
     }
   }
 
+  async getPlayerListByName(name: string, grade: string, time: string): Promise<PlayerList> {
+    try {
+      const response = await this.client.get('/data/sports_data.json');
+      const players = response.data.players;
+      
+      // 将赛程名称转换为选手列表名称格式
+      // 例如："男子组-100M-预赛" -> "高一男子组-100米-预赛"
+      const convertedName = name.replace('100M', '100米').replace('200M', '200米').replace('400M', '400米');
+      const fullName = grade + convertedName;
+      
+      // 根据转换后的名称查找对应的选手列表
+      for (const key in players) {
+        const playerList = players[key];
+        if (playerList.name === fullName) {
+          return playerList;
+        }
+      }
+      
+      // 如果未找到，抛出错误
+      throw new Error('未找到对应的选手列表');
+    } catch (error) {
+      console.error('Failed to load player list by name:', error);
+      throw new Error('加载选手列表失败');
+    }
+  }
+
   async getClassMapping(): Promise<ClassMapping> {
     try {
       const response = await this.client.get('/data/sports_data.json');

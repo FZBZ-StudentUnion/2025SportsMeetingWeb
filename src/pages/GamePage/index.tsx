@@ -9,22 +9,24 @@ import { ErrorMessage } from '../../components/common/ErrorMessage';
 const GamePage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [mounted, setMounted] = useState(false);
-  const id = searchParams.get('id');
+  const name = searchParams.get('name');
+  const grade = searchParams.get('grade');
+  const time = searchParams.get('time');
   const { state, actions } = useAppContext();
 
   useEffect(() => {
-    if (id) {
-      actions.loadPlayerList(id);
+    if (name && grade && time) {
+      actions.loadPlayerListByName(name, grade, time);
     }
     setMounted(true);
-  }, [id, actions]);
+  }, [name, grade, time, actions]);
 
-  if (!id) {
+  if (!name || !grade || !time) {
     return (
       <div className="game-page">
         <Header />
         <main className="main-content">
-          <ErrorMessage message="无效的赛事ID" />
+          <ErrorMessage message="无效的赛事参数" />
         </main>
         <Footer />
       </div>
@@ -50,7 +52,7 @@ const GamePage: React.FC = () => {
         <main className="main-content">
           <ErrorMessage 
             message={state.error} 
-            onRetry={() => actions.loadPlayerList(id)}
+            onRetry={() => actions.loadPlayerListByName(name!, grade!, time!)}
           />
         </main>
         <Footer />
@@ -81,10 +83,10 @@ const GamePage: React.FC = () => {
     return name.slice(2) || name;
   };
 
-  const isTrackEvent = (id: string): boolean => {
-    // 根据ID判断是否为径赛项目
-    const idNum = parseInt(id);
-    return idNum >= 20019 && idNum <= 21006;
+  const isTrackEvent = (name: string): boolean => {
+    // 根据项目名称判断是否为径赛项目
+    return name.includes('100米') || name.includes('200米') || name.includes('400米') || 
+           name.includes('800米') || name.includes('1500米') || name.includes('接力');
   };
 
   return (
@@ -109,7 +111,7 @@ const GamePage: React.FC = () => {
               <PlayerTable 
                 players={group}
                 classMapping={state.classMapping || {}}
-                isTrackEvent={isTrackEvent(id)}
+                isTrackEvent={isTrackEvent(state.playerList!.name)}
               />
             </div>
           ))}

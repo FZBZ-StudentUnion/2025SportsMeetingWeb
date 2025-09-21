@@ -212,7 +212,7 @@ const GameTable: React.FC<GameTableProps> = ({ title, games }) => {
               <td>{game.time}</td>
               <td>
                 <Link 
-                  to={game.link}
+                  to={`/games?name=${encodeURIComponent(game.name)}&grade=${encodeURIComponent(game.grade)}&time=${encodeURIComponent(game.time)}`}
                   className="game-link hover-lift"
                 >
                   查看详情
