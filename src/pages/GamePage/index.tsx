@@ -143,8 +143,8 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
           <tr>
             <th>{isTrackEvent ? '#' : '赛道'}</th>
             <th>{isTrackEvent ? '姓名' : '班级'}</th>
-            <th>数据</th>
-            <th>备注</th>
+            <th>成绩</th>
+            <th>班级</th>
           </tr>
         </thead>
         <tbody>

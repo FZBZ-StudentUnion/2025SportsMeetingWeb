@@ -38,11 +38,11 @@ class ApiService {
 
   async getGameSchedule(day: string): Promise<GameSchedule> {
     try {
-      const fileName = day === '2' ? '20.json' : '10.json';
-      const response = await this.client.get(`/data/games/${fileName}`);
+      const key = day === '2' ? '20' : '10';
+      const response = await this.client.get('/data/sports_data.json');
       
       // 转换数据结构
-      const data = response.data;
+      const data = response.data.games[key];
       return {
         track: {
           morning: data[0] || [],
@@ -61,8 +61,8 @@ class ApiService {
 
   async getPlayerList(id: string): Promise<PlayerList> {
     try {
-      const response = await this.client.get(`/data/players/${id}.json`);
-      return response.data;
+      const response = await this.client.get('/data/sports_data.json');
+      return response.data.players[id];
     } catch (error) {
       console.error('Failed to load player list:', error);
       throw new Error('加载选手列表失败');
@@ -71,8 +71,8 @@ class ApiService {
 
   async getClassMapping(): Promise<ClassMapping> {
     try {
-      const response = await this.client.get('/data/h2c.json');
-      return response.data;
+      const response = await this.client.get('/data/sports_data.json');
+      return response.data.games.classMapping;
     } catch (error) {
       console.error('Failed to load class mapping:', error);
       throw new Error('加载班级映射失败');
