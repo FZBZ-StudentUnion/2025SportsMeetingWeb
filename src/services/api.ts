@@ -127,6 +127,38 @@ class ApiService {
       throw new Error('文件下载失败');
     }
   }
+
+  async getSportsData(): Promise<any> {
+    try {
+      const response = await this.client.get('/data/sports_data.json');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to load sports data:', error);
+      throw new Error('加载体育数据失败');
+    }
+  }
+
+  async saveSportsData(data: any): Promise<void> {
+    try {
+      // 注意：由于浏览器安全限制，不能直接写入服务器文件
+      // 这里提供一个下载JSON文件的功能作为替代方案
+      const jsonString = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'sports_data.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to save sports data:', error);
+      throw new Error('保存体育数据失败');
+    }
+  }
 }
 
 export const apiService = new ApiService();
+export const getSportsData = () => apiService.getSportsData();
+export const saveSportsData = (data: any) => apiService.saveSportsData(data);

@@ -125,6 +125,19 @@ const GameListPage: React.FC = () => {
             >
               <span className="day-label zi">第二天</span>
             </button>
+            <Link 
+              to="/editor"
+              className="editor-button hover-lift"
+            >
+              <span className="day-label zi">赛程编辑</span>
+            </Link>
+            <Link 
+              to="/players"
+              className="editor-button hover-lift"
+              style={{ background: 'linear-gradient(45deg, #9C27B0, #7B1FA2)' }}
+            >
+              <span className="day-label zi">人员编辑</span>
+            </Link>
           </div>
         </div>
 
