@@ -126,6 +126,7 @@ interface PlayerTableProps {
     road: string;
     name: string;
     data: string;
+    class?: string;
   }>;
   classMapping: Record<string, string>;
   isTrackEvent: boolean;
@@ -153,7 +154,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
               <td>{player.road}</td>
               <td>{player.name === 'null' ? '-' : player.name}</td>
               <td>{player.data}</td>
-              <td>{classMapping[player.name] || '-'}</td>
+              <td>{player.class || classMapping[player.name] || '-'}</td>
             </tr>
           ))}
         </tbody>

@@ -10,6 +10,7 @@ export interface Player {
   road: string;
   name: string;
   data: string;
+  class?: string;
 }
 
 export interface PlayerList {
