@@ -38,7 +38,7 @@ class ApiService {
 
   async getGameSchedule(day: string): Promise<GameSchedule> {
     try {
-      const key = day === '2' ? '20' : '10';
+      const key = day === '2' ? '第二天' : '第一天';
       const response = await this.client.get('/data/sports_data.json');
       
       // 转换数据结构
@@ -62,7 +62,20 @@ class ApiService {
   async getPlayerList(id: string): Promise<PlayerList> {
     try {
       const response = await this.client.get('/data/sports_data.json');
-      return response.data.players[id];
+      const players = response.data.players;
+      
+      // 如果id是数字格式（向后兼容），先查找对应的name
+      if (/^\d+$/.test(id)) {
+        // 查找对应的name
+        for (const key in players) {
+          if (players[key].name && players[key].name.includes(id.slice(-3))) {
+            return players[key];
+          }
+        }
+      }
+      
+      // 直接使用name作为key查找
+      return players[id];
     } catch (error) {
       console.error('Failed to load player list:', error);
       throw new Error('加载选手列表失败');
@@ -79,12 +92,10 @@ class ApiService {
       const convertedName = name.replace('100M', '100米').replace('200M', '200米').replace('400M', '400米');
       const fullName = grade + convertedName;
       
-      // 根据转换后的名称查找对应的选手列表
-      for (const key in players) {
-        const playerList = players[key];
-        if (playerList.name === fullName) {
-          return playerList;
-        }
+      // 直接使用fullName作为key查找（因为现在使用name作为键名）
+      const playerList = players[fullName];
+      if (playerList) {
+        return playerList;
       }
       
       // 如果未找到，抛出错误
