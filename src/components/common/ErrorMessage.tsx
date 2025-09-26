@@ -11,9 +11,23 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   onRetry, 
   className = '' 
 }) => {
+  // 根据错误消息类型确定错误类型
+  const getErrorType = () => {
+    if (message.includes('网络连接失败') || message.includes('Network Error')) {
+      return 'network-error';
+    } else if (message.includes('请求超时') || message.includes('timeout')) {
+      return 'timeout-error';
+    } else if (message.includes('服务器连接失败')) {
+      return 'server-error';
+    }
+    return '';
+  };
+
+  const errorType = getErrorType();
+
   return (
     <div 
-      className={`flex flex-col items-center justify-center p-6 text-center bg-red-50 rounded-lg ${className}`}
+      className={`error-message ${errorType} flex flex-col items-center justify-center p-6 text-center rounded-lg ${className}`}
       role="alert"
     >
       <svg 
@@ -29,7 +43,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
           d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
         />
       </svg>
-      <p className="text-red-700 mb-4">{message}</p>
+      <p className="mb-4">{message}</p>
       {onRetry && (
         <button 
           onClick={onRetry}

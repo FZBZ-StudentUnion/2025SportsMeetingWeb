@@ -6,13 +6,38 @@ class ApiService {
   private client: AxiosInstance;
 
   constructor() {
-    // 动态检测baseURL
+    // 动态检测baseURL - 移动端优化
     let baseURL = API_CONFIG.BASE_URL;
     
     // 如果当前页面在3002端口，尝试连接本地服务器
     if (window.location.port === '3002') {
       baseURL = 'http://localhost:3001';
     }
+    
+    // 移动端适配：自动识别当前域名和协议
+    if (!baseURL && typeof window !== 'undefined') {
+      const protocol = window.location.protocol; // http: 或 https:
+      const hostname = window.location.hostname; // 当前域名
+      const port = window.location.port; // 当前端口
+      
+      // 构建基础URL
+      baseURL = `${protocol}//${hostname}`;
+      if (port && port !== '80' && port !== '443') {
+        baseURL += `:${port}`;
+      }
+      
+      // 如果当前端口是3000（前端开发端口），尝试连接后端端口3001
+      if (port === '3000') {
+        baseURL = `${protocol}//${hostname}:3001`;
+      }
+    }
+    
+    console.log('API Service初始化:', {
+      baseURL,
+      currentURL: window.location.href,
+      port: window.location.port,
+      hostname: window.location.hostname
+    });
     
     this.client = axios.create({
       baseURL: baseURL,
@@ -167,9 +192,31 @@ class ApiService {
     try {
       const response = await this.client.get('/api/data');
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get sports data:', error);
-      throw new Error('获取体育数据失败');
+      
+      // 增强错误信息，帮助移动端调试
+      let errorMessage = '获取体育数据失败';
+      
+      if (error.code === 'ECONNREFUSED') {
+        errorMessage = '无法连接到服务器，请检查网络连接';
+      } else if (error.code === 'ETIMEDOUT') {
+        errorMessage = '请求超时，请检查网络状况';
+      } else if (error.response) {
+        errorMessage = `服务器错误: ${error.response.status} ${error.response.statusText}`;
+      } else if (error.request) {
+        errorMessage = '无法连接到服务器，请检查网络设置';
+      }
+      
+      console.error('详细错误信息:', {
+        message: error.message,
+        code: error.code,
+        config: error.config,
+        request: error.request,
+        response: error.response
+      });
+      
+      throw new Error(errorMessage);
     }
   }
 

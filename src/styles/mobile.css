@@ -181,6 +181,182 @@
   }
 }
 
+/* 移动端错误提示优化 */
+@media (max-width: 768px) {
+  .error-message {
+    font-size: 14px;
+    padding: 12px 16px;
+    margin: 10px;
+    border-radius: 8px;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    text-align: center;
+    line-height: 1.4;
+  }
+  
+  .error-message.network-error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+  }
+  
+  .error-message.timeout-error {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+  }
+  
+  .loading-spinner {
+    margin: 20px auto;
+    text-align: center;
+    color: #666;
+  }
+}
+
+/* 超小屏幕错误提示 */
+@media (max-width: 375px) {
+  .error-message {
+    font-size: 12px;
+    padding: 10px 12px;
+    margin: 8px;
+  }
+}
+
+/* 网络状态指示器 */
+.network-status-indicator {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-text {
+  font-weight: 500;
+  color: #333;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.network-status-detailed {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 200px;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.network-details {
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.detail-item .label {
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-item .value {
+  color: #333;
+  font-weight: 600;
+}
+
+.detail-item.warning {
+  color: #ff6b35;
+}
+
+.offline-warning {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #c33;
+  text-align: center;
+}
+
+/* 移动端网络状态指示器优化 */
+@media (max-width: 768px) {
+  .network-status-indicator,
+  .network-status-detailed {
+    top: 5px;
+    right: 5px;
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+  
+  .network-status-detailed {
+    min-width: 160px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 375px) {
+  .network-status-indicator {
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+  
+  .status-dot {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .network-status-detailed {
+    min-width: 140px;
+    font-size: 9px;
+  }
+}
+
 /* 下载按钮移动端优化 */
 @media (max-width: 768px) {
   .download-button {
