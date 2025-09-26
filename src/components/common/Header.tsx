@@ -9,15 +9,57 @@ export const Header: React.FC = () => {
   const handleDownloadSchedule = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      // 直接使用浏览器下载PDF文件
+      // 自动识别当前域名和端口
+      const protocol = window.location.protocol; // http: 或 https:
+      const hostname = window.location.hostname; // 当前域名
+      const port = window.location.port; // 当前端口
+      
+      // 构建基础URL
+      let baseUrl = `${protocol}//${hostname}`;
+      if (port && port !== '80' && port !== '443') {
+        baseUrl += `:${port}`;
+      }
+      
+      // 构建PDF文件URL
+      const pdfUrl = `${baseUrl}/data/2025年福州八中第56届运动会秩序册.pdf`;
+      const fileName = '2025年福州八中第56届运动会秩序册.pdf';
+      
+      console.log('下载秩序册:', pdfUrl);
+      
+      // 创建下载链接
       const link = document.createElement('a');
-      link.href = 'http://localhost:3001/data/2025年福州八中第56届运动会秩序册.pdf';
-      link.download = '2025年福州八中第56届运动会秩序册.pdf';
+      link.href = pdfUrl;
+      link.download = fileName;
+      link.style.display = 'none';
+      
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // 下载成功的视觉反馈
+      const button = e.currentTarget as HTMLButtonElement;
+      const originalContent = button.innerHTML;
+      button.innerHTML = '<div class="download-button-content"><span class="download-label zi">下载成功</span><span class="download-target zi">✓</span></div>';
+      button.classList.add('download-success');
+      
+      setTimeout(() => {
+        button.innerHTML = originalContent;
+        button.classList.remove('download-success');
+      }, 2000);
+      
     } catch (error) {
       console.error('下载失败:', error);
+      
+      // 下载失败的视觉反馈
+      const button = e.currentTarget as HTMLButtonElement;
+      const originalContent = button.innerHTML;
+      button.innerHTML = '<div class="download-button-content"><span class="download-label zi">下载失败</span><span class="download-target zi">✗</span></div>';
+      button.classList.add('download-error');
+      
+      setTimeout(() => {
+        button.innerHTML = originalContent;
+        button.classList.remove('download-error');
+      }, 3000);
     }
   };
 

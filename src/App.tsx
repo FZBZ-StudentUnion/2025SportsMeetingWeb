@@ -3,6 +3,7 @@ import { useRoutes } from 'react-router-dom';
 import { AppProvider } from './contexts/AppContext';
 import routes from './routers';
 import './App.css';
+import './styles/mobile.css';
 
 const AppContent: React.FC = () => {
   const element = useRoutes(routes);
