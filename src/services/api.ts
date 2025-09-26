@@ -7,16 +7,12 @@ class ApiService {
 
   constructor() {
     // 动态检测baseURL
-    let baseURL = API_CONFIG.BASE_URL;
+    let baseURL = '';
     
-    // 如果当前页面在3002端口，尝试连接本地服务器
-    if (window.location.port === '3002') {
+    // 根据当前环境设置baseURL
+    const port = window.location.port;
+    if (port === '3003' || port === '3002') {
       baseURL = 'http://localhost:3001';
-    }
-    
-    // 使用相对路径，自动适应当前域名和协议
-    if (!baseURL || baseURL === 'http://localhost:3001') {
-      baseURL = '';  // 使用相对路径，自动适应当前域名
     }
     
     this.client = axios.create({
@@ -25,6 +21,7 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true,
     });
 
     // 请求拦截器

@@ -19,9 +19,16 @@ if (!fs.existsSync(dataDir)) {
 }
 
 // 中间件
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3003', 'http://localhost:3002'],
+  credentials: true
+}));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+
+// 静态文件服务
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/data', express.static(path.join(__dirname, 'public', 'data')));
 
 // 健康检查接口
 app.get('/api/health', (req, res) => {

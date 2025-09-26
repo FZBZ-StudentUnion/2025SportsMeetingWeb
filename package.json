@@ -21,14 +21,13 @@
   },
   "scripts": {
     "start": "node server.js",
-    "frontend": "set PORT=3002&&set BROWSER=none&&react-scripts start",
+    "frontend": "set PORT=3003&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server.js",
     "dev": "concurrently \"npm run server\" \"npm run frontend\""
   },
-  "proxy": "http://localhost:3001",
   "eslintConfig": {
     "extends": [
       "react-app",
