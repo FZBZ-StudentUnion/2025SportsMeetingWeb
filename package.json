@@ -15,10 +15,13 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
+    "frontend": "set PORT=3000&&set BROWSER=none&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "node server.js",
+    "dev": "concurrently \"npm run server\" \"npm run frontend\""
   },
   "eslintConfig": {
     "extends": [

@@ -6,8 +6,16 @@ class ApiService {
   private client: AxiosInstance;
 
   constructor() {
+    // 动态检测baseURL
+    let baseURL = API_CONFIG.BASE_URL;
+    
+    // 如果当前页面在3002端口，尝试连接本地服务器
+    if (window.location.port === '3002') {
+      baseURL = 'http://localhost:3001';
+    }
+    
     this.client = axios.create({
-      baseURL: API_CONFIG.BASE_URL,
+      baseURL: baseURL,
       timeout: API_CONFIG.TIMEOUT,
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +47,7 @@ class ApiService {
   async getGameSchedule(day: string): Promise<GameSchedule> {
     try {
       const key = day === '2' ? '第二天' : '第一天';
-      const response = await this.client.get('/data/sports_data.json');
+      const response = await this.client.get('/api/data');
       
       // 转换数据结构
       const data = response.data.games[key];
@@ -61,7 +69,7 @@ class ApiService {
 
   async getPlayerList(id: string): Promise<PlayerList> {
     try {
-      const response = await this.client.get('/data/sports_data.json');
+      const response = await this.client.get('/api/data');
       const players = response.data.players;
       
       // 如果id是数字格式（向后兼容），先查找对应的name
@@ -84,7 +92,7 @@ class ApiService {
 
   async getPlayerListByName(name: string, grade: string, time: string): Promise<PlayerList> {
     try {
-      const response = await this.client.get('/data/sports_data.json');
+      const response = await this.client.get('/api/data');
       const players = response.data.players;
       
       // 将赛程名称转换为选手列表名称格式
@@ -92,10 +100,12 @@ class ApiService {
       const convertedName = name.replace('100M', '100米').replace('200M', '200米').replace('400M', '400米');
       const fullName = grade + convertedName;
       
-      // 直接使用fullName作为key查找（因为现在使用name作为键名）
-      const playerList = players[fullName];
-      if (playerList) {
-        return playerList;
+      // 根据转换后的名称查找对应的选手列表
+      for (const key in players) {
+        const playerList = players[key];
+        if (playerList.name === fullName) {
+          return playerList;
+        }
       }
       
       // 如果未找到，抛出错误
@@ -108,7 +118,7 @@ class ApiService {
 
   async getClassMapping(): Promise<ClassMapping> {
     try {
-      const response = await this.client.get('/data/sports_data.json');
+      const response = await this.client.get('/api/data');
       return response.data.games.classMapping;
     } catch (error) {
       console.error('Failed to load class mapping:', error);
@@ -130,28 +140,18 @@ class ApiService {
 
   async getSportsData(): Promise<any> {
     try {
-      const response = await this.client.get('/data/sports_data.json');
+      const response = await this.client.get('/api/data');
       return response.data;
     } catch (error) {
-      console.error('Failed to load sports data:', error);
-      throw new Error('加载体育数据失败');
+      console.error('Failed to get sports data:', error);
+      throw new Error('获取体育数据失败');
     }
   }
 
-  async saveSportsData(data: any): Promise<void> {
+  async saveSportsData(data: any): Promise<any> {
     try {
-      // 注意：由于浏览器安全限制，不能直接写入服务器文件
-      // 这里提供一个下载JSON文件的功能作为替代方案
-      const jsonString = JSON.stringify(data, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'sports_data.json';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      const response = await this.client.post('/api/data', data);
+      return response.data;
     } catch (error) {
       console.error('Failed to save sports data:', error);
       throw new Error('保存体育数据失败');
@@ -160,5 +160,7 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
+
+// 兼容旧版本的导出函数
 export const getSportsData = () => apiService.getSportsData();
 export const saveSportsData = (data: any) => apiService.saveSportsData(data);

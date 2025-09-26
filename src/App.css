@@ -549,6 +549,16 @@ body {
   opacity: 0.8;
 }
 
+.copyright a {
+  color: #ffffff;
+  text-decoration: underline;
+  transition: opacity 0.3s ease;
+}
+
+.copyright a:hover {
+  opacity: 0.7;
+}
+
 /* 搜索功能样式 */
 .search-section {
   margin: 20px 0;
