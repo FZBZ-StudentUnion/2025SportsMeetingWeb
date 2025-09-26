@@ -31,42 +31,48 @@ export const AthleteSearch: React.FC<AthleteSearchProps> = ({
     if (state.gameSchedule) {
       const athletesMap = new Map();
       
-      // 从径赛和田赛数据中提取运动员信息
-      const extractAthletes = (games: any[]) => {
-        games.forEach(game => {
-          if (game.players && Array.isArray(game.players)) {
-            game.players.forEach((playerGroup: any[]) => {
-              playerGroup.forEach(player => {
-                if (player.name) {
-                  const key = `${player.name}-${player.class}`;
-                  if (!athletesMap.has(key)) {
-                    athletesMap.set(key, {
-                      name: player.name,
-                      className: player.class,
-                      events: [],
-                      gameLinks: []
-                    });
-                  }
-                  const athlete = athletesMap.get(key);
-                  athlete.events.push(game.name);
-                  athlete.gameLinks.push(`/games?name=${encodeURIComponent(game.name)}&grade=${encodeURIComponent(game.grade)}&time=${encodeURIComponent(game.time)}`);
+      // 获取所有比赛项目
+      const allGames = [
+        ...state.gameSchedule.track.morning,
+        ...state.gameSchedule.track.afternoon,
+        ...state.gameSchedule.field.morning,
+        ...state.gameSchedule.field.afternoon
+      ];
+      
+      // 遍历所有比赛项目，从playerList中获取对应的运动员数据
+      allGames.forEach(game => {
+        // 构造比赛名称key，用于在playerList中查找
+        const gameKey = game.name;
+        
+        if (state.playerList && (state.playerList as any)[gameKey] && (state.playerList as any)[gameKey].players) {
+          const playerData = (state.playerList as any)[gameKey];
+          
+          // 遍历所有分组
+          playerData.players.forEach((playerGroup: any[]) => {
+            playerGroup.forEach(player => {
+              if (player.name) {
+                const key = `${player.name}-${player.class}`;
+                if (!athletesMap.has(key)) {
+                  athletesMap.set(key, {
+                    name: player.name,
+                    className: player.class,
+                    events: [],
+                    gameLinks: []
+                  });
                 }
-              });
+                const athlete = athletesMap.get(key);
+                athlete.events.push(game.name);
+                athlete.gameLinks.push(`/games?name=${encodeURIComponent(game.name)}&grade=${encodeURIComponent(game.grade)}&time=${encodeURIComponent(game.time)}`);
+              }
             });
-          }
-        });
-      };
-
-      // 提取所有比赛项目的运动员
-      extractAthletes(state.gameSchedule.track.morning);
-      extractAthletes(state.gameSchedule.track.afternoon);
-      extractAthletes(state.gameSchedule.field.morning);
-      extractAthletes(state.gameSchedule.field.afternoon);
+          });
+        }
+      });
 
       const athletes = Array.from(athletesMap.values());
       setAllAthletes(athletes);
     }
-  }, [state.gameSchedule]);
+  }, [state.gameSchedule, state.playerList]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

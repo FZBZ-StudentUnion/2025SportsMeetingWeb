@@ -25,6 +25,8 @@ const GameListPage: React.FC = () => {
   useEffect(() => {
     actions.setCurrentDay(day);
     actions.loadGameSchedule(day);
+    // 同时加载所有运动员数据，用于搜索功能
+    actions.loadAllPlayers();
   }, [day, actions]);
 
 
