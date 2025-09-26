@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useAppContext } from '../../contexts/AppContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Athlete {
   name: string;
@@ -21,36 +23,50 @@ export const AthleteSearch: React.FC<AthleteSearchProps> = ({
   const [query, setQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [allAthletes, setAllAthletes] = useState<Athlete[]>([]);
+  const { state } = useAppContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // 加载真实的运动员数据
-    loadRealAthletes();
-  }, []);
+    // 从全局状态获取运动员数据
+    if (state.gameSchedule) {
+      const athletesMap = new Map();
+      
+      // 从径赛和田赛数据中提取运动员信息
+      const extractAthletes = (games: any[]) => {
+        games.forEach(game => {
+          if (game.players && Array.isArray(game.players)) {
+            game.players.forEach((playerGroup: any[]) => {
+              playerGroup.forEach(player => {
+                if (player.name) {
+                  const key = `${player.name}-${player.class}`;
+                  if (!athletesMap.has(key)) {
+                    athletesMap.set(key, {
+                      name: player.name,
+                      className: player.class,
+                      events: [],
+                      gameLinks: []
+                    });
+                  }
+                  const athlete = athletesMap.get(key);
+                  athlete.events.push(game.name);
+                  athlete.gameLinks.push(`/games?name=${encodeURIComponent(game.name)}&grade=${encodeURIComponent(game.grade)}&time=${encodeURIComponent(game.time)}`);
+                }
+              });
+            });
+          }
+        });
+      };
 
-  const loadRealAthletes = () => {
-    // 基于真实数据的运动员映射
-    const realAthletes: Athlete[] = [
-      { name: '李宥熹', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '丘天', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '林柏喆', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '毛盾', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '张哲豪', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '陈哲锐', className: '高一(1)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '林琢程', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '王墨迪', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '吴博晗', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '林焌豪', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '黄家兴', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '程志滔', className: '高一(2)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '陈睿哲', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '林俊炜', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '张艺哲', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '刘凯烨', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '孙永昊', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-      { name: '卢隽祺', className: '高一(3)', events: ['高一男子组 100米 预赛'], gameLinks: ['/games?id=10001'] },
-    ];
-    setAllAthletes(realAthletes);
-  };
+      // 提取所有比赛项目的运动员
+      extractAthletes(state.gameSchedule.track.morning);
+      extractAthletes(state.gameSchedule.track.afternoon);
+      extractAthletes(state.gameSchedule.field.morning);
+      extractAthletes(state.gameSchedule.field.afternoon);
+
+      const athletes = Array.from(athletesMap.values());
+      setAllAthletes(athletes);
+    }
+  }, [state.gameSchedule]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -68,7 +84,7 @@ export const AthleteSearch: React.FC<AthleteSearchProps> = ({
   const handleAthleteClick = (athlete: Athlete, gameIndex: number = 0) => {
     // 跳转到对应的项目页面
     if (athlete.gameLinks[gameIndex]) {
-      window.location.href = athlete.gameLinks[gameIndex];
+      navigate(athlete.gameLinks[gameIndex]);
     }
   };
 
