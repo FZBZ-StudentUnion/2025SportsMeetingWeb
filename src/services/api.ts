@@ -95,20 +95,36 @@ class ApiService {
       const response = await this.client.get('/api/data');
       const players = response.data.players;
       
-      // 将赛程名称转换为选手列表名称格式
-      // 例如："男子组-100M-预赛" -> "高一男子组-100米-预赛"
-      const convertedName = name.replace('100M', '100米').replace('200M', '200米').replace('400M', '400米');
-      const fullName = grade + convertedName;
+      // name参数已经是完整的格式，如"高一男子组-100米-预赛"
+      // 直接在players对象中查找对应的键
+      const playerList = players[name];
       
-      // 根据转换后的名称查找对应的选手列表
-      for (const key in players) {
-        const playerList = players[key];
-        if (playerList.name === fullName) {
-          return playerList;
+      if (playerList) {
+        return playerList;
+      }
+      
+      // 如果未找到，尝试一些兼容性处理
+      // 检查是否包含M后缀需要转换
+      if (name.includes('100M')) {
+        const convertedName = name.replace('100M', '100米');
+        if (players[convertedName]) {
+          return players[convertedName];
+        }
+      }
+      if (name.includes('200M')) {
+        const convertedName = name.replace('200M', '200米');
+        if (players[convertedName]) {
+          return players[convertedName];
+        }
+      }
+      if (name.includes('400M')) {
+        const convertedName = name.replace('400M', '400米');
+        if (players[convertedName]) {
+          return players[convertedName];
         }
       }
       
-      // 如果未找到，抛出错误
+      // 如果仍然未找到，抛出错误
       throw new Error('未找到对应的选手列表');
     } catch (error) {
       console.error('Failed to load player list by name:', error);

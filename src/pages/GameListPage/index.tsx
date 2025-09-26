@@ -15,9 +15,7 @@ import { DATE_CONFIG } from '../../utils/constants';
 const GameListPage: React.FC = () => {
   const { getParam } = useQueryParams();
   const { state, actions } = useAppContext();
-  const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [athleteQuery, setAthleteQuery] = useState('');
   
   const day = useMemo(() => {
     const dayParam = getParam('day');
@@ -25,7 +23,6 @@ const GameListPage: React.FC = () => {
   }, [getParam]);
 
   useEffect(() => {
-    setMounted(true);
     actions.setCurrentDay(day);
     actions.loadGameSchedule(day);
   }, [day, actions]);
