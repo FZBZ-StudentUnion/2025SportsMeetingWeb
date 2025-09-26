@@ -545,8 +545,34 @@ body {
   margin-top: auto;
 }
 
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .copyright {
   opacity: 0.8;
+  text-align: left;
+  flex: 1;
+}
+
+.footer-editor-button {
+  background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin-left: 20px;
+}
+
+.footer-editor-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
 }
 
 .copyright a {
@@ -737,6 +763,7 @@ body {
 
   /* 运动员搜索样式 */
   .athlete-item {
+    padding: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
   }
@@ -744,6 +771,22 @@ body {
   .athlete-item:hover {
     background-color: #f8f9fa;
     transform: translateX(5px);
+  }
+
+  /* Footer响应式样式 */
+  .footer-content {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .copyright {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .footer-editor-button {
+    margin-left: 0;
   }
 
   .game-info {
