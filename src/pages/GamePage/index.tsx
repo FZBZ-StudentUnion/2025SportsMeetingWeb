@@ -73,6 +73,32 @@ const GamePage: React.FC = () => {
     );
   }
 
+  // 检查players数组是否存在且有效
+  if (!state.playerList.players || !Array.isArray(state.playerList.players)) {
+    return (
+      <div className="game-page">
+        <Header />
+        <main className="main-content">
+          <ErrorMessage message="未找到运动员数据" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // 检查playerList的name属性是否存在
+  if (!state.playerList.name) {
+    return (
+      <div className="game-page">
+        <Header />
+        <main className="main-content">
+          <ErrorMessage message="比赛信息格式错误" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   const getGradeName = (name: string): string => {
     if (name.length >= 2) {
       return name.slice(0, 2) + '年段';
@@ -143,6 +169,15 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
   classMapping, 
   isTrackEvent 
 }) => {
+  // 检查players数组是否存在且有效
+  if (!players || !Array.isArray(players)) {
+    return (
+      <div className="player-table-container animate-scaleIn">
+        <div className="no-data-message">暂无运动员数据</div>
+      </div>
+    );
+  }
+
   return (
     <div className="player-table-container animate-scaleIn">
       <table className="player-table">

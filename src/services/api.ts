@@ -100,6 +100,11 @@ class ApiService {
       const playerList = players[name];
       
       if (playerList) {
+        // 确保返回的数据结构符合PlayerList类型
+        if (!playerList.name || !Array.isArray(playerList.players)) {
+          console.error('Invalid player list structure:', playerList);
+          throw new Error('选手列表数据格式错误');
+        }
         return playerList;
       }
       
@@ -124,8 +129,12 @@ class ApiService {
         }
       }
       
-      // 如果仍然未找到，抛出错误
-      throw new Error('未找到对应的选手列表');
+      // 如果仍然未找到，返回一个空的PlayerList结构
+      console.warn('Player list not found for name:', name);
+      return {
+        name: name,
+        players: []
+      };
     } catch (error) {
       console.error('Failed to load player list by name:', error);
       throw new Error('加载选手列表失败');
