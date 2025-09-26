@@ -28,7 +28,7 @@
   gap: 15px;
 }
 
-.save-btn, .back-btn {
+.save-btn, .back-btn, .logout-btn {
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
@@ -58,6 +58,16 @@
 .back-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.logout-btn {
+  background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+  color: white;
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
 }
 
 .player-editor-content {

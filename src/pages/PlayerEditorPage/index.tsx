@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSportsData, saveSportsData } from '../../services/api';
+import { LoginForm } from '../../components/common';
 import './PlayerEditor.css';
 
 interface Player {
@@ -25,10 +26,31 @@ const PlayerEditorPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [editingPlayer, setEditingPlayer] = useState<{ groupKey: string; roadIndex: number; playerIndex: number } | null>(null);
   const [editForm, setEditForm] = useState({ road: '', name: '', data: '', class: '' });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginError, setLoginError] = useState('');
 
   useEffect(() => {
-    loadData();
+    // 检查是否已经登录
+    const authStatus = sessionStorage.getItem('playerEditorAuth');
+    if (authStatus === 'authenticated') {
+      setIsAuthenticated(true);
+      loadData();
+    } else {
+      setLoading(false);
+    }
   }, []);
+
+  const handleLogin = (username: string, password: string) => {
+    // 验证用户名和密码
+    if (username === 'fzbz' && password === 'fzbzstunion@883561') {
+      setIsAuthenticated(true);
+      setLoginError('');
+      sessionStorage.setItem('playerEditorAuth', 'authenticated');
+      loadData();
+    } else {
+      setLoginError('用户名或密码错误');
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -148,6 +170,16 @@ const PlayerEditorPage: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('playerEditorAuth');
+    setSportsData(null);
+  };
+
+  if (!isAuthenticated) {
+    return <LoginForm onLogin={handleLogin} error={loginError} />;
+  }
+
   if (loading) {
     return <div className="player-editor-loading">加载中...</div>;
   }
@@ -168,6 +200,9 @@ const PlayerEditorPage: React.FC = () => {
             保存数据
           </button>
           <a href="/" className="back-btn">返回主页</a>
+          <button className="logout-btn" onClick={handleLogout}>
+            退出登录
+          </button>
         </div>
       </div>
 

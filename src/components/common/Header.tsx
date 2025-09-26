@@ -10,11 +10,11 @@ export const Header: React.FC = () => {
   const handleDownloadSchedule = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      const blob = await apiService.downloadFile('/data/2024年福州八中第56届运动会秩序册.pdf');
+      const blob = await apiService.downloadFile('/data/2025年福州八中第56届运动会秩序册.pdf');
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = '2024年福州八中第56届运动会秩序册.pdf';
+      link.download = '2025年福州八中第56届运动会秩序册.pdf';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
