@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { APP_CONFIG } from '../../utils/constants';
 
 export const Footer: React.FC = () => {
@@ -10,10 +11,18 @@ export const Footer: React.FC = () => {
 
   return (
     <footer className="app-footer">
-      <p 
-        className="copyright" 
-        dangerouslySetInnerHTML={{ __html: copyrightWithLink }}
-      />
+      <div className="footer-content">
+        <p 
+          className="copyright" 
+          dangerouslySetInnerHTML={{ __html: copyrightWithLink }}
+        />
+        <Link 
+          to="/players"
+          className="footer-editor-button hover-lift"
+        >
+          人员编辑
+        </Link>
+      </div>
     </footer>
   );
 };
