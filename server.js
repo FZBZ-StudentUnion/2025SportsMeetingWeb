@@ -23,6 +23,9 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
+// 静态文件服务 - 提供PDF文件下载
+app.use('/data', express.static(path.join(__dirname, 'public', 'data')));
+
 // 健康检查接口
 app.get('/api/health', (req, res) => {
   res.json({ 

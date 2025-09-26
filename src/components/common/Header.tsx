@@ -10,15 +10,13 @@ export const Header: React.FC = () => {
   const handleDownloadSchedule = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      const blob = await apiService.downloadFile('/data/2025年福州八中第56届运动会秩序册.pdf');
-      const url = window.URL.createObjectURL(blob);
+      // 直接使用浏览器下载PDF文件
       const link = document.createElement('a');
-      link.href = url;
+      link.href = 'http://localhost:3001/data/2025年福州八中第56届运动会秩序册.pdf';
       link.download = '2025年福州八中第56届运动会秩序册.pdf';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('下载失败:', error);
     }
