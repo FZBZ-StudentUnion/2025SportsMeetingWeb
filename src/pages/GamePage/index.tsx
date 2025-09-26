@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useAppContext } from '../../contexts/AppContext';
 import { Header } from '../../components/common/Header';
 import { Footer } from '../../components/common/Footer';
@@ -8,6 +8,7 @@ import { ErrorMessage } from '../../components/common/ErrorMessage';
 
 const GamePage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [mounted, setMounted] = useState(false);
   const name = searchParams.get('name');
   const grade = searchParams.get('grade');
@@ -99,7 +100,10 @@ const GamePage: React.FC = () => {
             <span className="grade-name">{getGradeName(state.playerList.name)}</span>
             <span className="event-name">{getEventName(state.playerList.name)}</span>
           </h1>
-          <Link to="/" className="back-button-top animate-fadeInRight">
+          <Link 
+            to={location.state?.fromDay ? `/?day=${location.state.fromDay}` : '/'} 
+            className="back-button-top animate-fadeInRight"
+          >
             <span className="back-arrow">←</span>
             返回赛程列表
           </Link>

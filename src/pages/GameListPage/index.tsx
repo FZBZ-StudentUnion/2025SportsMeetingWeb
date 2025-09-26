@@ -143,10 +143,12 @@ const GameListPage: React.FC = () => {
               <GameTable 
                 title="上午" 
                 games={filteredGames.track.morning} 
+                currentDay={day}
               />
               <GameTable 
                 title="下午" 
                 games={filteredGames.track.afternoon} 
+                currentDay={day}
               />
             </section>
 
@@ -155,10 +157,12 @@ const GameListPage: React.FC = () => {
               <GameTable 
                 title="上午" 
                 games={filteredGames.field.morning} 
+                currentDay={day}
               />
               <GameTable 
                 title="下午" 
                 games={filteredGames.field.afternoon} 
+                currentDay={day}
               />
             </section>
           </>
@@ -178,9 +182,10 @@ interface GameTableProps {
     time: string;
     link: string;
   }>;
+  currentDay: string;
 }
 
-const GameTable: React.FC<GameTableProps> = ({ title, games }) => {
+const GameTable: React.FC<GameTableProps> = ({ title, games, currentDay }) => {
   if (!games || games.length === 0) {
     return null;
   }
@@ -210,6 +215,7 @@ const GameTable: React.FC<GameTableProps> = ({ title, games }) => {
               <td>
                 <Link 
                   to={`/games?name=${encodeURIComponent(game.name)}&grade=${encodeURIComponent(game.grade)}&time=${encodeURIComponent(game.time)}`}
+                  state={{ fromDay: currentDay }}
                   className="game-link hover-lift"
                 >
                   查看详情

@@ -1,7 +1,6 @@
 import React from 'react';
 import { APP_CONFIG } from '../../utils/constants';
 import { useCurrentTime } from '../../hooks/useCurrentTime';
-import { apiService } from '../../services/api';
 import logo from '../../logo.png';
 
 export const Header: React.FC = () => {
