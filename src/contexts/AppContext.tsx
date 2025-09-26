@@ -88,7 +88,9 @@ const AppContext = createContext<{
   actions: {
     loadGameSchedule: (day: string) => Promise<void>;
     loadPlayerList: (id: string) => Promise<void>;
+    loadPlayerListByName: (name: string, grade: string, time: string) => Promise<void>;
     loadClassMapping: () => Promise<void>;
+    loadAllPlayers: () => Promise<void>;
     setCurrentDay: (day: '1' | '2') => void;
     clearError: () => void;
   };
@@ -133,12 +135,49 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       }
     },
 
+    loadPlayerListByName: async (name: string, grade: string, time: string) => {
+      try {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        dispatch({ type: 'SET_ERROR', payload: null });
+        const [playerList, classMapping] = await Promise.all([
+          apiService.getPlayerListByName(name, grade, time),
+          apiService.getClassMapping(),
+        ]);
+        dispatch({ type: 'LOAD_PLAYER_LIST', payload: playerList });
+        dispatch({ type: 'LOAD_CLASS_MAPPING', payload: classMapping });
+      } catch (error) {
+        dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : '加载失败' });
+      } finally {
+        dispatch({ type: 'SET_LOADING', payload: false });
+      }
+    },
+
     loadClassMapping: async () => {
       try {
         const mapping = await apiService.getClassMapping();
         dispatch({ type: 'LOAD_CLASS_MAPPING', payload: mapping });
       } catch (error) {
         console.error('Failed to load class mapping:', error);
+      }
+    },
+
+    loadAllPlayers: async () => {
+      try {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        dispatch({ type: 'SET_ERROR', payload: null });
+        const sportsData = await apiService.getSportsData();
+        
+        if (sportsData.players) {
+          dispatch({ type: 'LOAD_PLAYER_LIST', payload: sportsData.players });
+        }
+        
+        if (sportsData.games && sportsData.games.classMapping) {
+          dispatch({ type: 'LOAD_CLASS_MAPPING', payload: sportsData.games.classMapping });
+        }
+      } catch (error) {
+        dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : '加载运动员数据失败' });
+      } finally {
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
     },
 

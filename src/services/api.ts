@@ -4,21 +4,18 @@ import { GameSchedule, PlayerList, ClassMapping } from '../types';
 
 class ApiService {
   private client: AxiosInstance;
-  private backendClient: AxiosInstance;
 
   constructor() {
-    // 前端静态资源客户端
+    // 动态检测baseURL
+    let baseURL = API_CONFIG.BASE_URL;
+    
+    // 如果当前页面在3002端口，尝试连接本地服务器
+    if (window.location.port === '3002') {
+      baseURL = 'http://localhost:3001';
+    }
+    
     this.client = axios.create({
-      baseURL: API_CONFIG.BASE_URL,
-      timeout: API_CONFIG.TIMEOUT,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    // 后端API客户端
-    this.backendClient = axios.create({
-      baseURL: 'http://localhost:3001',
+      baseURL: baseURL,
       timeout: API_CONFIG.TIMEOUT,
       headers: {
         'Content-Type': 'application/json',
@@ -27,11 +24,6 @@ class ApiService {
 
     // 请求拦截器
     this.client.interceptors.request.use(
-      (config) => config,
-      (error) => Promise.reject(error)
-    );
-
-    this.backendClient.interceptors.request.use(
       (config) => config,
       (error) => Promise.reject(error)
     );
@@ -50,29 +42,15 @@ class ApiService {
         return Promise.reject(error);
       }
     );
-
-    this.backendClient.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response) {
-          console.error('Backend API Error:', error.response.status, error.response.data);
-        } else if (error.request) {
-          console.error('Backend Network Error:', error.message);
-        } else {
-          console.error('Backend Error:', error.message);
-        }
-        return Promise.reject(error);
-      }
-    );
   }
 
-  // 读取比赛日程（使用后端API）
   async getGameSchedule(day: string): Promise<GameSchedule> {
     try {
-      const response = await this.backendClient.get(`/api/games/${day}`);
+      const key = day === '2' ? '第二天' : '第一天';
+      const response = await this.client.get('/api/data');
       
       // 转换数据结构
-      const data = response.data;
+      const data = response.data.games[key];
       return {
         track: {
           morning: data[0] || [],
@@ -89,62 +67,90 @@ class ApiService {
     }
   }
 
-  // 更新比赛日程（使用后端API）
-  async updateGameSchedule(day: string, data: any): Promise<boolean> {
-    try {
-      const response = await this.backendClient.post(`/api/games/${day}`, data);
-      return response.data.success;
-    } catch (error) {
-      console.error('Failed to update game schedule:', error);
-      throw new Error('更新赛程失败');
-    }
-  }
-
-  // 读取运动员列表
   async getPlayerList(id: string): Promise<PlayerList> {
     try {
-      const response = await this.backendClient.get(`/api/players/${id}`);
-      return response.data;
+      const response = await this.client.get('/api/data');
+      const players = response.data.players;
+      
+      // 如果id是数字格式（向后兼容），先查找对应的name
+      if (/^\d+$/.test(id)) {
+        // 查找对应的name
+        for (const key in players) {
+          if (players[key].name && players[key].name.includes(id.slice(-3))) {
+            return players[key];
+          }
+        }
+      }
+      
+      // 直接使用name作为key查找
+      return players[id];
     } catch (error) {
       console.error('Failed to load player list:', error);
       throw new Error('加载选手列表失败');
     }
   }
 
-  // 更新运动员列表
-  async updatePlayerList(id: string, data: any): Promise<boolean> {
+  async getPlayerListByName(name: string, grade: string, time: string): Promise<PlayerList> {
     try {
-      const response = await this.backendClient.post(`/api/players/${id}`, data);
-      return response.data.success;
+      const response = await this.client.get('/api/data');
+      const players = response.data.players;
+      
+      // name参数已经是完整的格式，如"高一男子组-100米-预赛"
+      // 直接在players对象中查找对应的键
+      const playerList = players[name];
+      
+      if (playerList) {
+        // 确保返回的数据结构符合PlayerList类型
+        if (!playerList.name || !Array.isArray(playerList.players)) {
+          console.error('Invalid player list structure:', playerList);
+          throw new Error('选手列表数据格式错误');
+        }
+        return playerList;
+      }
+      
+      // 如果未找到，尝试一些兼容性处理
+      // 检查是否包含M后缀需要转换
+      if (name.includes('100M')) {
+        const convertedName = name.replace('100M', '100米');
+        if (players[convertedName]) {
+          return players[convertedName];
+        }
+      }
+      if (name.includes('200M')) {
+        const convertedName = name.replace('200M', '200米');
+        if (players[convertedName]) {
+          return players[convertedName];
+        }
+      }
+      if (name.includes('400M')) {
+        const convertedName = name.replace('400M', '400米');
+        if (players[convertedName]) {
+          return players[convertedName];
+        }
+      }
+      
+      // 如果仍然未找到，返回一个空的PlayerList结构
+      console.warn('Player list not found for name:', name);
+      return {
+        name: name,
+        players: []
+      };
     } catch (error) {
-      console.error('Failed to update player list:', error);
-      throw new Error('更新选手列表失败');
+      console.error('Failed to load player list by name:', error);
+      throw new Error('加载选手列表失败');
     }
   }
 
-  // 获取班级映射
   async getClassMapping(): Promise<ClassMapping> {
     try {
-      const response = await this.backendClient.get('/api/class-mapping');
-      return response.data;
+      const response = await this.client.get('/api/data');
+      return response.data.games.classMapping;
     } catch (error) {
       console.error('Failed to load class mapping:', error);
       throw new Error('加载班级映射失败');
     }
   }
 
-  // 备份数据
-  async backupData(type: string): Promise<boolean> {
-    try {
-      const response = await this.backendClient.post(`/api/backup/${type}`);
-      return response.data.success;
-    } catch (error) {
-      console.error('Failed to backup data:', error);
-      throw new Error('备份失败');
-    }
-  }
-
-  // 下载文件（保持原有功能）
   async downloadFile(url: string): Promise<Blob> {
     try {
       const response = await this.client.get(url, {
@@ -156,6 +162,30 @@ class ApiService {
       throw new Error('文件下载失败');
     }
   }
+
+  async getSportsData(): Promise<any> {
+    try {
+      const response = await this.client.get('/api/data');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to get sports data:', error);
+      throw new Error('获取体育数据失败');
+    }
+  }
+
+  async saveSportsData(data: any): Promise<any> {
+    try {
+      const response = await this.client.post('/api/data', data);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to save sports data:', error);
+      throw new Error('保存体育数据失败');
+    }
+  }
 }
 
 export const apiService = new ApiService();
+
+// 兼容旧版本的导出函数
+export const getSportsData = () => apiService.getSportsData();
+export const saveSportsData = (data: any) => apiService.saveSportsData(data);

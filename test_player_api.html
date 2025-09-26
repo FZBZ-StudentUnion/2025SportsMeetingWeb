@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>测试选手列表API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        .test-result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>测试选手列表API修复</h1>
+    <button onclick="testPlayerAPI()">测试选手列表API</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testPlayerAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>正在测试...</p>';
+            
+            try {
+                // 测试获取完整数据
+                const response = await fetch('http://localhost:3001/api/data');
+                const data = await response.json();
+                
+                // 获取第一个选手列表键名
+                const players = data.games.players;
+                const firstKey = Object.keys(players)[0];
+                const firstPlayerList = players[firstKey];
+                
+                let html = '<div class="test-result">';
+                html += '<h3>✓ API数据获取成功</h3>';
+                html += '<p><strong>第一个选手键名:</strong> ' + firstKey + '</p>';
+                html += '<p><strong>对应名称:</strong> ' + firstPlayerList.name + '</p>';
+                html += '<p><strong>选手组数:</strong> ' + firstPlayerList.players.length + '</p>';
+                
+                // 模拟getPlayerListByName的调用
+                const testName = "高一男子组-100米-预赛";
+                const testPlayerList = players[testName];
+                
+                if (testPlayerList) {
+                    html += '<div class="success">';
+                    html += '<h4>✓ 选手列表查找测试成功</h4>';
+                    html += '<p><strong>测试键名:</strong> ' + testName + '</p>';
+                    html += '<p><strong>找到名称:</strong> ' + testPlayerList.name + '</p>';
+                    html += '<p><strong>选手组数:</strong> ' + testPlayerList.players.length + '</p>';
+                    html += '</div>';
+                } else {
+                    html += '<div class="error">';
+                    html += '<h4>✗ 选手列表查找测试失败</h4>';
+                    html += '<p><strong>测试键名:</strong> ' + testName + '</p>';
+                    html += '<p>未找到对应的选手列表</p>';
+                    html += '<p><strong>可用的键名:</strong></p>';
+                    html += '<ul>';
+                    const availableKeys = Object.keys(players).slice(0, 5);
+                    availableKeys.forEach(key => {
+                        html += '<li>' + key + '</li>';
+                    });
+                    html += '</ul>';
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+                resultDiv.innerHTML = html;
+                
+                console.log('选手数据:', players);
+                console.log('第一个键名:', firstKey);
+                
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error"><h4>✗ API测试失败</h4><p>错误: ' + error.message + '</p></div>';
+                console.error('API测试失败:', error);
+            }
+        }
+    </script>
+</body>
+</html>

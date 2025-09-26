@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useAppContext } from '../../contexts/AppContext';
 import { Header } from '../../components/common/Header';
 import { Footer } from '../../components/common/Footer';
@@ -8,38 +8,26 @@ import { ErrorMessage } from '../../components/common/ErrorMessage';
 
 const GamePage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [mounted, setMounted] = useState(false);
-  const id = searchParams.get('id');
+  const name = searchParams.get('name');
+  const grade = searchParams.get('grade');
+  const time = searchParams.get('time');
   const { state, actions } = useAppContext();
 
   useEffect(() => {
-    if (id) {
-      actions.loadPlayerList(id);
+    if (name && grade && time) {
+      actions.loadPlayerListByName(name, grade, time);
     }
     setMounted(true);
-  }, [id, actions]);
+  }, [name, grade, time, actions]);
 
-  // 监听数据更新事件并刷新赛事详情
-  useEffect(() => {
-    const handleDataUpdate = () => {
-      if (id) {
-        actions.loadPlayerList(id);
-      }
-    };
-
-    window.addEventListener('dataUpdated', handleDataUpdate);
-
-    return () => {
-      window.removeEventListener('dataUpdated', handleDataUpdate);
-    };
-  }, [id, actions]);
-
-  if (!id) {
+  if (!name || !grade || !time) {
     return (
       <div className="game-page">
         <Header />
         <main className="main-content">
-          <ErrorMessage message="无效的赛事ID" />
+          <ErrorMessage message="无效的赛事参数" />
         </main>
         <Footer />
       </div>
@@ -65,7 +53,7 @@ const GamePage: React.FC = () => {
         <main className="main-content">
           <ErrorMessage 
             message={state.error} 
-            onRetry={() => actions.loadPlayerList(id)}
+            onRetry={() => actions.loadPlayerListByName(name!, grade!, time!)}
           />
         </main>
         <Footer />
@@ -85,6 +73,32 @@ const GamePage: React.FC = () => {
     );
   }
 
+  // 检查players数组是否存在且有效
+  if (!state.playerList.players || !Array.isArray(state.playerList.players)) {
+    return (
+      <div className="game-page">
+        <Header />
+        <main className="main-content">
+          <ErrorMessage message="未找到运动员数据" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // 检查playerList的name属性是否存在
+  if (!state.playerList.name) {
+    return (
+      <div className="game-page">
+        <Header />
+        <main className="main-content">
+          <ErrorMessage message="比赛信息格式错误" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   const getGradeName = (name: string): string => {
     if (name.length >= 2) {
       return name.slice(0, 2) + '年段';
@@ -96,10 +110,10 @@ const GamePage: React.FC = () => {
     return name.slice(2) || name;
   };
 
-  const isTrackEvent = (id: string): boolean => {
-    // 根据ID判断是否为径赛项目
-    const idNum = parseInt(id);
-    return idNum >= 20019 && idNum <= 21006;
+  const isTrackEvent = (name: string): boolean => {
+    // 根据项目名称判断是否为径赛项目
+    return name.includes('100米') || name.includes('200米') || name.includes('400米') || 
+           name.includes('800米') || name.includes('1500米') || name.includes('接力');
   };
 
   return (
@@ -112,7 +126,10 @@ const GamePage: React.FC = () => {
             <span className="grade-name">{getGradeName(state.playerList.name)}</span>
             <span className="event-name">{getEventName(state.playerList.name)}</span>
           </h1>
-          <Link to="/" className="back-button-top animate-fadeInRight">
+          <Link 
+            to={location.state?.fromDay ? `/?day=${location.state.fromDay}` : '/'} 
+            className="back-button-top animate-fadeInRight"
+          >
             <span className="back-arrow">←</span>
             返回赛程列表
           </Link>
@@ -124,7 +141,7 @@ const GamePage: React.FC = () => {
               <PlayerTable 
                 players={group}
                 classMapping={state.classMapping || {}}
-                isTrackEvent={isTrackEvent(id)}
+                isTrackEvent={isTrackEvent(state.playerList!.name)}
               />
             </div>
           ))}
@@ -141,6 +158,7 @@ interface PlayerTableProps {
     road: string;
     name: string;
     data: string;
+    class?: string;
   }>;
   classMapping: Record<string, string>;
   isTrackEvent: boolean;
@@ -151,6 +169,15 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
   classMapping, 
   isTrackEvent 
 }) => {
+  // 检查players数组是否存在且有效
+  if (!players || !Array.isArray(players)) {
+    return (
+      <div className="player-table-container animate-scaleIn">
+        <div className="no-data-message">暂无运动员数据</div>
+      </div>
+    );
+  }
+
   return (
     <div className="player-table-container animate-scaleIn">
       <table className="player-table">
@@ -158,8 +185,8 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
           <tr>
             <th>{isTrackEvent ? '#' : '赛道'}</th>
             <th>{isTrackEvent ? '姓名' : '班级'}</th>
-            <th>数据</th>
-            <th>备注</th>
+            <th>成绩</th>
+            <th>班级</th>
           </tr>
         </thead>
         <tbody>
@@ -168,7 +195,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
               <td>{player.road}</td>
               <td>{player.name === 'null' ? '-' : player.name}</td>
               <td>{player.data}</td>
-              <td>{classMapping[player.name] || '-'}</td>
+              <td>{player.class || classMapping[player.name] || '-'}</td>
             </tr>
           ))}
         </tbody>

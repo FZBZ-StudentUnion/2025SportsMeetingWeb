@@ -1,10 +1,7 @@
-import { lazy } from 'react';
-import { ProtectedRoute } from '../contexts/AuthContext';
-
-const GameListPage = lazy(() => import('../pages/GameListPage'));
-const GamePage = lazy(() => import('../pages/GamePage'));
-const AdminPage = lazy(() => import('../pages/AdminPage'));
-const UnifiedManagementPage = lazy(() => import('../pages/UnifiedManagementPage'));
+import React from 'react';
+import GameListPage from '../pages/GameListPage';
+import GamePage from '../pages/GamePage';
+import PlayerEditorPage from '../pages/PlayerEditorPage';
 
 const routes = [
   {
@@ -16,20 +13,8 @@ const routes = [
     element: <GamePage />,
   },
   {
-    path: '/admin',
-    element: (
-      <ProtectedRoute>
-        <AdminPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/unified-management',
-    element: (
-      <ProtectedRoute>
-        <UnifiedManagementPage />
-      </ProtectedRoute>
-    ),
+    path: '/players',
+    element: <PlayerEditorPage />,
   },
 ];
 

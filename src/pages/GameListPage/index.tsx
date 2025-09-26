@@ -25,6 +25,8 @@ const GameListPage: React.FC = () => {
   useEffect(() => {
     actions.setCurrentDay(day);
     actions.loadGameSchedule(day);
+    // 同时加载所有运动员数据，用于搜索功能
+    actions.loadAllPlayers();
   }, [day, actions]);
 
   // 监听数据更新事件并刷新数据
@@ -154,10 +156,12 @@ const GameListPage: React.FC = () => {
               <GameTable 
                 title="上午" 
                 games={filteredGames.track.morning} 
+                currentDay={day}
               />
               <GameTable 
                 title="下午" 
                 games={filteredGames.track.afternoon} 
+                currentDay={day}
               />
             </section>
 
@@ -166,10 +170,12 @@ const GameListPage: React.FC = () => {
               <GameTable 
                 title="上午" 
                 games={filteredGames.field.morning} 
+                currentDay={day}
               />
               <GameTable 
                 title="下午" 
                 games={filteredGames.field.afternoon} 
+                currentDay={day}
               />
             </section>
           </>
@@ -189,9 +195,10 @@ interface GameTableProps {
     time: string;
     link: string;
   }>;
+  currentDay: string;
 }
 
-const GameTable: React.FC<GameTableProps> = ({ title, games }) => {
+const GameTable: React.FC<GameTableProps> = ({ title, games, currentDay }) => {
   if (!games || games.length === 0) {
     return null;
   }
@@ -220,7 +227,8 @@ const GameTable: React.FC<GameTableProps> = ({ title, games }) => {
               <td>{game.time}</td>
               <td>
                 <Link 
-                  to={game.link}
+                  to={`/games?name=${encodeURIComponent(game.name)}&grade=${encodeURIComponent(game.grade)}&time=${encodeURIComponent(game.time)}`}
+                  state={{ fromDay: currentDay }}
                   className="game-link hover-lift"
                 >
                   查看详情

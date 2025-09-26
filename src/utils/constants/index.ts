@@ -8,8 +8,8 @@ export const API_CONFIG = {
 export const RESOURCE_PATHS = {
   GAMES: '/data/games',
   PLAYERS: '/data/players',
-  H2C: '/data/h2c.json',
-  SCHEDULE: '/data/2024年福州八中第56届运动会秩序册.pdf',
+  H2C: '/data/sports_data.json',
+  SCHEDULE: '/data/2025年福州八中第56届运动会秩序册.pdf',
 } as const;
 
 // 日期配置

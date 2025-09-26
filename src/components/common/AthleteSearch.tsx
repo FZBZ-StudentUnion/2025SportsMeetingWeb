@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { apiService } from '../../services/api';
+import { useAppContext } from '../../contexts/AppContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Athlete {
   name: string;
@@ -22,89 +23,56 @@ export const AthleteSearch: React.FC<AthleteSearchProps> = ({
   const [query, setQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [allAthletes, setAllAthletes] = useState<Athlete[]>([]);
+  const { state } = useAppContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // 从真实API加载运动员数据
-    loadRealAthletes();
-  }, []);
-
-  // 监听数据更新事件并刷新运动员数据
-  useEffect(() => {
-    const handleDataUpdate = () => {
-      loadRealAthletes();
-    };
-
-    window.addEventListener('dataUpdated', handleDataUpdate);
-
-    return () => {
-      window.removeEventListener('dataUpdated', handleDataUpdate);
-    };
-  }, []);
-
-  const loadRealAthletes = async () => {
-    try {
-      const athleteFiles = [
-        '10001', '10002', '10003', '10004', '10005', '10006',
-        '10007', '10008', '10009', '10010', '10011', '10012',
-        '10101', '10102', '10103', '10104', '10105',
-        '11001', '11002', '11003', '11004', '11005', '11006',
-        '11007', '11008', '11009', '11010', '11011', '11012',
-        '11101', '11102', '11103', '11104', '11105', '11106',
-        '11107', '11108',
-        '20001', '20002', '20003', '20004', '20005', '20006',
-        '20007', '20008', '20009', '20010', '20011', '20012',
-        '20013', '20014', '20015', '20016', '20017', '20018',
-        '20019', '20020', '20021',
-        '20101', '20102', '20103', '20104', '20105', '20106',
-        '20107', '20108',
-        '21001', '21002', '21003', '21004', '21005', '21006',
-        '21101', '21102', '21103'
+    // 从全局状态获取运动员数据
+    if (state.gameSchedule) {
+      const athletesMap = new Map();
+      
+      // 获取所有比赛项目
+      const allGames = [
+        ...state.gameSchedule.track.morning,
+        ...state.gameSchedule.track.afternoon,
+        ...state.gameSchedule.field.morning,
+        ...state.gameSchedule.field.afternoon
       ];
-
-      const allAthletes: Athlete[] = [];
-
-      // 使用apiService加载数据
-      for (const id of athleteFiles) {
-        try {
-          const gameData = await apiService.getPlayerList(id);
+      
+      // 遍历所有比赛项目，从playerList中获取对应的运动员数据
+      allGames.forEach(game => {
+        // 构造比赛名称key，用于在playerList中查找
+        const gameKey = game.name;
+        
+        if (state.playerList && (state.playerList as any)[gameKey] && (state.playerList as any)[gameKey].players) {
+          const playerData = (state.playerList as any)[gameKey];
           
-          // 从游戏数据中提取运动员信息
-          gameData.players.forEach((group: any[], groupIndex: number) => {
-            group.forEach((player: any) => {
-              if (player.name && player.name.trim()) {
-                // 从项目名称提取年级和性别信息
-                const gameName = gameData.name;
-                let className = player.class || '未知班级';
-                
-                if (className === '' && player.name) {
-                  // 如果没有班级信息，使用项目信息推测
-                  if (gameName.includes('高一')) className = '高一(?)班';
-                  else if (gameName.includes('高二')) className = '高二(?)班';
-                  else if (gameName.includes('高三')) className = '高三(?)班';
-                  else className = '未知班级';
+          // 遍历所有分组
+          playerData.players.forEach((playerGroup: any[]) => {
+            playerGroup.forEach(player => {
+              if (player.name) {
+                const key = `${player.name}-${player.class}`;
+                if (!athletesMap.has(key)) {
+                  athletesMap.set(key, {
+                    name: player.name,
+                    className: player.class,
+                    events: [],
+                    gameLinks: []
+                  });
                 }
-
-                allAthletes.push({
-                  name: player.name,
-                  className: className,
-                  events: [gameData.name],
-                  gameLinks: [`/games?id=${id}`]
-                });
+                const athlete = athletesMap.get(key);
+                athlete.events.push(game.name);
+                athlete.gameLinks.push(`/games?name=${encodeURIComponent(game.name)}&grade=${encodeURIComponent(game.grade)}&time=${encodeURIComponent(game.time)}`);
               }
             });
           });
-        } catch (error) {
-          console.error(`加载运动员文件失败: ${id}`, error);
         }
-      }
+      });
 
-      setAllAthletes(allAthletes);
-    } catch (error) {
-      console.error('加载运动员数据失败:', error);
-      // 如果加载失败，使用空数组
-      setAllAthletes([]);
+      const athletes = Array.from(athletesMap.values());
+      setAllAthletes(athletes);
     }
-  };
+  }, [state.gameSchedule, state.playerList]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -122,7 +90,7 @@ export const AthleteSearch: React.FC<AthleteSearchProps> = ({
   const handleAthleteClick = (athlete: Athlete, gameIndex: number = 0) => {
     // 跳转到对应的项目页面
     if (athlete.gameLinks[gameIndex]) {
-      window.location.href = athlete.gameLinks[gameIndex];
+      navigate(athlete.gameLinks[gameIndex]);
     }
   };
 
