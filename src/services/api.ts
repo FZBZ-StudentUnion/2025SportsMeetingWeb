@@ -11,7 +11,7 @@ class ApiService {
     
     // 根据当前环境设置baseURL
     const port = window.location.port;
-    if (port === '3003' || port === '3002') {
+    if (port === '3000' || port === '3002' || port === '3003') {
       baseURL = 'http://localhost:3001';
     }
     

@@ -20,7 +20,7 @@ if (!fs.existsSync(dataDir)) {
 
 // 中间件
 app.use(cors({
-  origin: ['http://localhost:3003', 'http://localhost:3002'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003'],
   credentials: true
 }));
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -97,8 +97,34 @@ app.use((err, req, res, next) => {
   });
 });
 
+// 启动前端开发服务器
+function startFrontendServer() {
+  console.log('正在启动前端开发服务器...');
+  
+  const frontendProcess = spawn('npm', ['run', 'frontend'], {
+    stdio: 'inherit',
+    shell: true,
+    cwd: __dirname
+  });
+
+  frontendProcess.on('error', (error) => {
+    console.error('启动前端服务器失败:', error);
+  });
+
+  frontendProcess.on('exit', (code) => {
+    if (code !== 0) {
+      console.log(`前端服务器进程退出，代码: ${code}`);
+    }
+  });
+
+  return frontendProcess;
+}
+
 // 启动服务器
 app.listen(PORT, () => {
-  console.log(`服务器运行在端口 ${PORT}`);
+  console.log(`后端服务器运行在端口 ${PORT}`);
   console.log(`数据文件路径: ${dataFilePath}`);
+  
+  // 启动前端开发服务器
+  startFrontendServer();
 });
