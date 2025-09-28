@@ -35,16 +35,19 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-// CORS 配置
-const allowedOrigins = process.env.CORS_ORIGINS ? 
-  process.env.CORS_ORIGINS.split(',').map(origin => origin.trim()) : 
-  ['http://localhost:3456', 'http://localhost:3457', 'http://localhost:3000', 'http://localhost:3001'];
+// CORS 配置 - 强制使用通配符允许所有域名访问
+const allowedOrigins = ['*'];
 
-console.log('CORS 允许的域名:', allowedOrigins);
+console.log('🌐 CORS配置: 允许所有域名访问 (通配符模式)');
 
 // 中间件
 app.use(cors({
   origin: function (origin, callback) {
+    // 如果设置了通配符，允许所有来源
+    if (allowedOrigins.includes('*')) {
+      return callback(null, true);
+    }
+    
     // 允许没有origin的请求（如移动应用或Postman）
     if (!origin) return callback(null, true);
     

@@ -6,13 +6,19 @@ class ApiService {
   private client: AxiosInstance;
 
   constructor() {
-    // 动态检测baseURL
+    // 动态检测baseURL - 支持所有域名
     let baseURL = '';
     
     // 根据环境变量和当前环境设置baseURL
     if (process.env.REACT_APP_ENV === 'production' || process.env.NODE_ENV === 'production') {
-      // 生产环境 - 使用环境变量或相对路径
-      baseURL = process.env.REACT_APP_API_BASE_URL || '';
+      // 生产环境 - 如果设置了API基础URL则使用，否则使用相对路径
+      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+      if (apiBaseUrl) {
+        baseURL = apiBaseUrl;
+      } else {
+        // 使用相对路径，适配所有域名
+        baseURL = '';
+      }
     } else {
       // 开发环境 - 根据端口设置
       const port = window.location.port;
@@ -26,7 +32,7 @@ class ApiService {
       baseURL = '';
     }
     
-    console.log('API Service initialized with baseURL:', baseURL);
+    console.log('API Service initialized with baseURL:', baseURL || '(相对路径 - 适配所有域名)');
     
     this.client = axios.create({
       baseURL: baseURL,
