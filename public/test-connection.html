@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连接测试 - 运动会管理系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-button {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #40a9ff;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .success {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+        .error {
+            background-color: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #ff4d4f;
+        }
+        .info {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            color: #1890ff;
+        }
+        .config-info {
+            background-color: #fafafa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .loading {
+            color: #1890ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏃‍♂️ 运动会管理系统 - 连接测试</h1>
+        
+        <div class="config-info">
+            <h3>📋 当前配置信息</h3>
+            <div id="config-info">
+                <p><strong>当前URL:</strong> <span id="current-url"></span></p>
+                <p><strong>主机名:</strong> <span id="hostname"></span></p>
+                <p><strong>端口:</strong> <span id="port"></span></p>
+                <p><strong>协议:</strong> <span id="protocol"></span></p>
+                <p><strong>预期API地址:</strong> <span id="expected-api"></span></p>
+            <p><strong>推荐端口:</strong> 前端: 3456, 后端: 3457</p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 API连接测试</h3>
+            <button class="test-button" onclick="testHealthCheck()">测试健康检查</button>
+            <button class="test-button" onclick="testDataFetch()">测试数据获取</button>
+            <button class="test-button" onclick="testCORS()">测试CORS</button>
+            <div id="api-results" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📁 静态文件测试</h3>
+            <button class="test-button" onclick="testStaticFiles()">测试静态文件访问</button>
+            <div id="static-results" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🌐 网络诊断</h3>
+            <button class="test-button" onclick="diagnoseNetwork()">网络诊断</button>
+            <div id="network-results" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>⚡ 快速修复建议</h3>
+            <div id="suggestions" class="result info" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // 显示当前配置信息
+        function displayConfigInfo() {
+            document.getElementById('current-url').textContent = window.location.href;
+            document.getElementById('hostname').textContent = window.location.hostname;
+            document.getElementById('port').textContent = window.location.port || '80';
+            document.getElementById('protocol').textContent = window.location.protocol;
+            
+            const expectedApi = window.location.origin + '/api/health';
+            document.getElementById('expected-api').textContent = expectedApi;
+        }
+
+        // 显示结果
+        function showResult(elementId, content, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = content;
+            element.className = `result ${type}`;
+            element.style.display = 'block';
+        }
+
+        // 测试健康检查
+        async function testHealthCheck() {
+            const resultDiv = document.getElementById('api-results');
+            showResult('api-results', '正在测试健康检查...', 'loading');
+            
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('api-results', `
+                        <strong>✅ 健康检查成功！</strong><br>
+                        状态: ${data.status}<br>
+                        时间戳: ${data.timestamp}<br>
+                        数据文件: ${data.dataFile}<br>
+                        HTTP状态: ${response.status}
+                    `, 'success');
+                    generateSuggestions();
+                } else {
+                    showResult('api-results', `
+                        <strong>❌ 健康检查失败</strong><br>
+                        HTTP状态: ${response.status}<br>
+                        错误: ${JSON.stringify(data)}
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('api-results', `
+                    <strong>❌ 连接失败</strong><br>
+                    错误类型: ${error.name}<br>
+                    错误信息: ${error.message}<br>
+                    请检查网络连接和服务器状态
+                `, 'error');
+            }
+        }
+
+        // 测试数据获取
+        async function testDataFetch() {
+            showResult('api-results', '正在测试数据获取...', 'loading');
+            
+            try {
+                const response = await fetch('/api/data');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const hasGames = data.games && Object.keys(data.games).length > 0;
+                    const hasPlayers = data.players && Object.keys(data.players).length > 0;
+                    
+                    showResult('api-results', `
+                        <strong>✅ 数据获取成功！</strong><br>
+                        游戏数据: ${hasGames ? '✅ 存在' : '❌ 缺失'}<br>
+                        选手数据: ${hasPlayers ? '✅ 存在' : '❌ 缺失'}<br>
+                        HTTP状态: ${response.status}<br>
+                        数据大小: ${JSON.stringify(data).length} 字符
+                    `, 'success');
+                } else {
+                    showResult('api-results', `
+                        <strong>❌ 数据获取失败</strong><br>
+                        HTTP状态: ${response.status}<br>
+                        错误: ${JSON.stringify(data)}
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('api-results', `
+                    <strong>❌ 数据获取失败</strong><br>
+                    错误类型: ${error.name}<br>
+                    错误信息: ${error.message}
+                `, 'error');
+            }
+        }
+
+        // 测试CORS
+        async function testCORS() {
+            showResult('api-results', '正在测试CORS...', 'loading');
+            
+            try {
+                // 尝试从不同源头发送请求
+                const response = await fetch('/api/health', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+                
+                const corsHeaders = {
+                    'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+                    'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials'),
+                    'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+                    'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers')
+                };
+                
+                showResult('api-results', `
+                    <strong>CORS测试结果:</strong><br>
+                    HTTP状态: ${response.status}<br>
+                    Access-Control-Allow-Origin: ${corsHeaders['Access-Control-Allow-Origin'] || '未设置'}<br>
+                    Access-Control-Allow-Credentials: ${corsHeaders['Access-Control-Allow-Credentials'] || '未设置'}<br>
+                    Access-Control-Allow-Methods: ${corsHeaders['Access-Control-Allow-Methods'] || '未设置'}<br>
+                    Access-Control-Allow-Headers: ${corsHeaders['Access-Control-Allow-Headers'] || '未设置'}
+                `, response.ok ? 'success' : 'error');
+                
+            } catch (error) {
+                showResult('api-results', `
+                    <strong>❌ CORS测试失败</strong><br>
+                    错误类型: ${error.name}<br>
+                    错误信息: ${error.message}
+                `, 'error');
+            }
+        }
+
+        // 测试静态文件
+        async function testStaticFiles() {
+            showResult('static-results', '正在测试静态文件访问...', 'loading');
+            
+            const testFiles = [
+                '/data/sports_data.json',
+                '/favicon.ico',
+                '/manifest.json'
+            ];
+            
+            const results = [];
+            
+            for (const file of testFiles) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    results.push({
+                        file: file,
+                        status: response.status,
+                        ok: response.ok,
+                        contentType: response.headers.get('Content-Type')
+                    });
+                } catch (error) {
+                    results.push({
+                        file: file,
+                        status: 'ERROR',
+                        ok: false,
+                        error: error.message
+                    });
+                }
+            }
+            
+            let html = '<strong>静态文件测试结果:</strong><br>';
+            results.forEach(result => {
+                const status = result.ok ? '✅' : '❌';
+                html += `${status} ${result.file} - HTTP ${result.status}`;
+                if (result.contentType) {
+                    html += ` (${result.contentType})`;
+                }
+                if (result.error) {
+                    html += ` - ${result.error}`;
+                }
+                html += '<br>';
+            });
+            
+            const allOk = results.every(r => r.ok);
+            showResult('static-results', html, allOk ? 'success' : 'error');
+        }
+
+        // 网络诊断
+        async function diagnoseNetwork() {
+            showResult('network-results', '正在进行网络诊断...', 'loading');
+            
+            const diagnostics = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                online: navigator.onLine,
+                connection: navigator.connection || '不支持',
+                currentUrl: window.location.href,
+                hostname: window.location.hostname,
+                protocol: window.location.protocol,
+                port: window.location.port || '80'
+            };
+            
+            // 测试DNS解析
+            const dnsTest = await testDNS();
+            
+            let html = '<strong>网络诊断结果:</strong><br>';
+            html += `时间戳: ${diagnostics.timestamp}<br>`;
+            html += `在线状态: ${diagnostics.online ? '✅ 在线' : '❌ 离线'}<br>`;
+            html += `协议: ${diagnostics.protocol}<br>`;
+            html += `主机名: ${diagnostics.hostname}<br>`;
+            html += `端口: ${diagnostics.port}<br>`;
+            html += `DNS测试: ${dnsTest}<br>`;
+            
+            showResult('network-results', html, 'info');
+        }
+
+        // DNS测试
+        async function testDNS() {
+            try {
+                const start = Date.now();
+                await fetch(window.location.origin + '/favicon.ico', { 
+                    method: 'HEAD',
+                    cache: 'no-cache'
+                });
+                const duration = Date.now() - start;
+                return `✅ 成功 (${duration}ms)`;
+            } catch (error) {
+                return `❌ 失败 - ${error.message}`;
+            }
+        }
+
+        // 生成修复建议
+        function generateSuggestions() {
+            const suggestions = [];
+            
+            if (window.location.protocol === 'https:') {
+                suggestions.push('✅ 使用HTTPS协议，安全性良好');
+            } else {
+                suggestions.push('⚠️ 使用HTTP协议，建议在生产环境使用HTTPS');
+            }
+            
+            if (window.location.hostname === 'localhost') {
+                suggestions.push('ℹ️ 当前为本地开发环境，确保后端服务在端口3457运行');
+            } else {
+                suggestions.push('ℹ️ 当前为远程环境，确保CORS配置正确');
+            }
+            
+            suggestions.push('💡 如果API连接失败，请检查：');
+            suggestions.push('  - 后端服务是否正常运行');
+            suggestions.push('  - CORS_ORIGINS环境变量是否包含当前域名');
+            suggestions.push('  - 防火墙设置是否允许访问');
+            suggestions.push('  - SSL证书是否有效（HTTPS环境）');
+            
+            showResult('suggestions', suggestions.join('<br>'), 'info');
+        }
+
+        // 页面加载时显示配置信息
+        window.onload = function() {
+            displayConfigInfo();
+            generateSuggestions();
+        };
+    </script>
+</body>
+</html>

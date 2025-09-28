@@ -6,7 +6,24 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3457;
+
+// 进程优雅关闭处理
+process.on('SIGTERM', () => {
+  console.log('收到SIGTERM信号，正在关闭服务器...');
+  server.close(() => {
+    console.log('服务器已关闭');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('收到SIGINT信号，正在关闭服务器...');
+  server.close(() => {
+    console.log('服务器已关闭');
+    process.exit(0);
+  });
+});
 
 // 数据文件路径
 const dataFilePath = path.join(__dirname, 'public', 'data', 'sports_data.json');
@@ -18,13 +35,36 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
+// CORS 配置
+const allowedOrigins = process.env.CORS_ORIGINS ? 
+  process.env.CORS_ORIGINS.split(',').map(origin => origin.trim()) : 
+  ['http://localhost:3456', 'http://localhost:3457', 'http://localhost:3000', 'http://localhost:3001'];
+
+console.log('CORS 允许的域名:', allowedOrigins);
+
 // 中间件
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003'],
+  origin: function (origin, callback) {
+    // 允许没有origin的请求（如移动应用或Postman）
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS拒绝访问:', origin);
+      callback(new Error('不允许的CORS源'));
+    }
+  },
   credentials: true
 }));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+
+// 请求日志中间件
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Origin: ${req.headers.origin || 'no-origin'} - IP: ${req.ip}`);
+  next();
+});
 
 // 静态文件服务
 app.use(express.static(path.join(__dirname, 'public')));
@@ -104,7 +144,8 @@ function startFrontendServer() {
   const frontendProcess = spawn('npm', ['run', 'frontend'], {
     stdio: 'inherit',
     shell: true,
-    cwd: __dirname
+    cwd: __dirname,
+    env: { ...process.env, PORT: '3456' }
   });
 
   frontendProcess.on('error', (error) => {
@@ -121,10 +162,22 @@ function startFrontendServer() {
 }
 
 // 启动服务器
-app.listen(PORT, () => {
+const server = app.listen(PORT, (error) => {
+  if (error) {
+    console.error(`服务器启动失败:`, error);
+    if (error.code === 'EADDRINUSE') {
+      console.error(`端口 ${PORT} 已被占用`);
+    }
+    process.exit(1);
+  }
+  
   console.log(`后端服务器运行在端口 ${PORT}`);
   console.log(`数据文件路径: ${dataFilePath}`);
   
-  // 启动前端开发服务器
-  startFrontendServer();
+  // 仅在开发模式下启动前端开发服务器
+  if (process.env.NODE_ENV !== 'production') {
+    setTimeout(() => {
+      startFrontendServer();
+    }, 1000); // 延迟1秒启动前端服务器，确保后端完全启动
+  }
 });

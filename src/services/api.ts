@@ -9,11 +9,24 @@ class ApiService {
     // 动态检测baseURL
     let baseURL = '';
     
-    // 根据当前环境设置baseURL
-    const port = window.location.port;
-    if (port === '3000' || port === '3002' || port === '3003') {
-      baseURL = 'http://localhost:3001';
+    // 根据环境变量和当前环境设置baseURL
+    if (process.env.REACT_APP_ENV === 'production' || process.env.NODE_ENV === 'production') {
+      // 生产环境 - 使用环境变量或相对路径
+      baseURL = process.env.REACT_APP_API_BASE_URL || '';
+    } else {
+      // 开发环境 - 根据端口设置
+      const port = window.location.port;
+      if (port === '3456' || port === '3000' || port === '3002' || port === '3003') {
+        baseURL = 'http://localhost:3457';
+      }
     }
+    
+    // 如果没有设置 baseURL，使用相对路径
+    if (!baseURL) {
+      baseURL = '';
+    }
+    
+    console.log('API Service initialized with baseURL:', baseURL);
     
     this.client = axios.create({
       baseURL: baseURL,
@@ -32,8 +45,21 @@ class ApiService {
 
     // 响应拦截器
     this.client.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        console.log('API Response Success:', response.config.url, response.status);
+        return response;
+      },
       (error) => {
+        console.error('API Error Details:', {
+          url: error.config?.url,
+          method: error.config?.method,
+          baseURL: error.config?.baseURL,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          message: error.message,
+          timestamp: new Date().toISOString()
+        });
+        
         if (error.response) {
           console.error('API Error:', error.response.status, error.response.data);
         } else if (error.request) {
